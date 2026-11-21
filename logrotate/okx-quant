@@ -1,4 +1,4 @@
-﻿/opt/okx_quant/logs/*.log {
+/opt/okx_quant/logs/*.log {
     daily
     rotate 30
     compress

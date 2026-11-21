@@ -1,4 +1,4 @@
-﻿import time, threading
+import time, threading
 from utils.logger import get_logger
 
 class BlackSwanProtector:

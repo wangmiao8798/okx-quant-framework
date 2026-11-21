@@ -1,4 +1,4 @@
-﻿"""
+"""
 策略基类
 """
 from abc import ABC, abstractmethod

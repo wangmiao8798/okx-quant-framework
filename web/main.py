@@ -1,4 +1,4 @@
-﻿"""OKX 量化交易系统 - Web管理后台入口"""
+"""OKX 量化交易系统 - Web管理后台入口"""
 import os, sys, json
 from pathlib import Path
 from fastapi import FastAPI, Request

@@ -1,4 +1,4 @@
-﻿"""API密钥加密存储：Fernet加密 + PBKDF2口令派生
+"""API密钥加密存储：Fernet加密 + PBKDF2口令派生
 """
 
 import os, base64

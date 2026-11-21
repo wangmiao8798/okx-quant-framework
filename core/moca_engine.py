@@ -1,4 +1,4 @@
-﻿"""
+"""
 MOCA 自适应引擎 (Market Oscillation & Chaos Adaptive)
 
 市场状态:

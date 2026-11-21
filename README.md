@@ -1,4 +1,4 @@
-﻿# OKX 合约对冲网格交易框架
+# OKX 合约对冲网格交易框架
 
 > **A production-grade engineering framework for delta-neutral grid trading on OKX perpetual swaps.**
 > Focus: order-state correctness, risk gating, and self-healing under real exchange conditions — not on promising returns.

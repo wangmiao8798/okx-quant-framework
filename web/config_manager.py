@@ -1,4 +1,4 @@
-﻿"""Web面板配置文件管理"""
+"""Web面板配置文件管理"""
 import json
 import os
 import yaml

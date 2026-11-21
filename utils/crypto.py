@@ -1,4 +1,4 @@
-﻿"""用户API密钥AES加密存储 (Fernet + 服务端密钥文件)"""
+"""用户API密钥AES加密存储 (Fernet + 服务端密钥文件)"""
 import os, base64
 from pathlib import Path
 

@@ -1,4 +1,4 @@
-﻿"""AI-Trader 交易平台客户端"""
+"""AI-Trader 交易平台客户端"""
 import json, time, urllib.request, ssl
 from utils.logger import get_logger
 

@@ -1,4 +1,4 @@
-﻿from dataclasses import dataclass
+from dataclasses import dataclass
 from utils.logger import get_logger
 from risk.black_swan import BlackSwanProtector
 from risk.liquidation_guard import LiquidationGuard
