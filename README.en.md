@@ -12,7 +12,7 @@ This is not a "profitable strategy in a box". It is a trading framework that has
 ## Read this first
 
 - **Nothing here is investment advice. No returns are promised.** Grid strategies earn small in ranging markets and take large losses in trending ones. That is a property of the payoff structure, not a bug to be fixed.
-- **The author ran this live and deliberately shut it down during the extreme market of November 2026.** The performance figures below are a limited sample, included to show engineering capability and failure boundaries — **not as a track record**.
+- **The author ran this live and stopped it in November 2026 to reallocate capital to another account.** Before stopping, it took a significant drawdown in a one-way market (unrealised loss exceeded equity at the time) — but with no liquidation, no forced close, and full TP coverage. The figures below are a limited sample, included to show engineering capability and failure boundaries — **not as a track record**.
 - Defaults ship as **demo trading** (`flag: '1'`) with `ai_trader` disabled. **Before switching to live, recompute every risk parameter for your own account size** (see "Parameter consistency").
 - Leveraged trading can wipe out your entire capital. Run demo for at least one full market cycle first.
 
@@ -225,7 +225,7 @@ ADX trend hit rate (forward-validated, `TREND_ADX=25`):
 
 ## Failure boundaries (an honest record)
 
-The system failed and was shut down during the November 2026 market. The reasons are worth writing down:
+In November 2026 this system took a significant drawdown in a one-way market and was then **stopped by choice**, to move capital to another account that was short of margin. It did not blow up: at shutdown there were no liquidations, TP coverage was complete, and self-healing was running normally. But these boundaries are real:
 
 1. **One-way trends dismantle a symmetric grid.** Rallies take the long leg out of TP → naked short; selloffs take the short leg out → naked long. Both directions happened live. The net_reducing exemption fixes "cannot refill"; it cannot fix "price never comes back".
 2. **Unrealised loss can exceed equity.** When you absorb a leveraged position with your own capital buffer, a sustained trend breaks both the risk budget and your nerve.
