@@ -1,0 +1,15 @@
+weights:
+  korea:
+    sk_hynix: 0.70
+    samsung: 0.30
+  us:
+    micron: 0.60
+    dram_etf: 0.40
+quality:
+  window_tolerance_seconds: 90
+  max_reference_age_seconds: 180
+  require_korea_quote_timestamp: true
+thresholds:
+  lead_pct: 0.50
+  estimated_round_trip_cost_pct: 0.20
+advisory_only: true

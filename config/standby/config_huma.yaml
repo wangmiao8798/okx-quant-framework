@@ -1,0 +1,39 @@
+profile:
+  slug: huma
+  name: HUMA 双向低位观察档
+  symbol: HUMA-USDT-SWAP
+  runtime_name: standalone_huma
+  status: standby
+  live_enabled: false
+  activation_blockers:
+    - rebuild_compromised_host
+    - rotate_okx_api_key
+    - verify_contract_value_execution
+
+instrument:
+  ct_val: 100
+  ct_val_ccy: HUMA
+  min_contracts: 1
+  lot_contracts: 1
+  tick_size: 0.00001
+
+strategy:
+  type: standalone_two_sided_grid
+  reference_interval: 5m
+  contracts_per_level: 1
+  levels_per_side: 3
+  grid_step_ratio: 0.008
+  take_profit_ratio: 0.012
+  max_side_notional_usdt: 7.0
+  max_net_notional_usdt: 3.0
+  startup_market_orders: false
+  startup_auto_hedge: false
+  loss_rebalance_enabled: false
+  stop_loss_enabled: false
+  hard_liquidation_guard: true
+
+execution:
+  enabled: false
+  paper_only: true
+  requires_fresh_instrument_check: true
+  requires_rotated_credentials: true

@@ -1,0 +1,12 @@
+[Unit]
+Description=Collect DRAM cross-market snapshot every 60 seconds
+
+[Timer]
+OnBootSec=45sec
+OnUnitActiveSec=60sec
+AccuracySec=2sec
+Persistent=true
+Unit=okx-dram-cross-market.service
+
+[Install]
+WantedBy=timers.target

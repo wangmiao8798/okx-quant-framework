@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OKX Quant V2</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0f1117;--bg2:#1a1d2e;--bg3:#242840;--text:#e8eaed;--text2:#9aa0b5;--accent:#4f8cff;--green:#34d399;--red:#f87171;--yellow:#fbbf24;--card:#1e2235;--border:#2a2e45;--radius:8px}
+body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+input,select{background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:6px;width:100%;font-size:14px}
+button{cursor:pointer;border:none;border-radius:6px;padding:9px 14px;font-size:13px;color:#fff}
+.btn-primary{background:var(--accent)}.btn-danger{background:var(--red)}.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}.btn-warn{background:#8a6a16}
+.auth{max-width:380px;margin:80px auto;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:28px}
+.auth h1{font-size:24px;text-align:center;margin-bottom:8px}.auth p{font-size:13px;color:var(--text2);text-align:center;margin-bottom:20px}
+.form-group{margin-bottom:12px}.form-group label{display:block;margin-bottom:4px;font-size:12px;color:var(--text2)}
+.app{display:none}
+.header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--border);background:var(--bg2);position:sticky;top:0;z-index:10}
+.header h2{font-size:18px}.header .actions{display:flex;gap:8px;flex-wrap:wrap}
+.main{padding:20px;max-width:1280px;margin:0 auto}
+.banner{background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.25);color:#fcd34d;padding:12px 14px;border-radius:8px;margin-bottom:14px;font-size:13px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px}.stat .lbl{font-size:12px;color:var(--text2)}.stat .val{font-size:22px;font-weight:700;margin-top:6px}
+.layout{display:grid;grid-template-columns:minmax(320px,380px) 1fr;gap:16px}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.panel h3{font-size:15px;margin-bottom:12px}
+.profile-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.profile{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.profile .hdr{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:1px solid var(--border)}
+.profile .body{padding:12px 14px}
+.row{display:flex;justify-content:space-between;gap:12px;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px}
+.row:last-child{border:none}.row .l{color:var(--text2)}.row .v{text-align:right}
+.badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600}
+.badge.green{background:rgba(52,211,153,.15);color:var(--green);border:1px solid rgba(52,211,153,.3)}
+.badge.red{background:rgba(248,113,113,.15);color:var(--red);border:1px solid rgba(248,113,113,.3)}
+.badge.yellow{background:rgba(251,191,36,.15);color:var(--yellow);border:1px solid rgba(251,191,36,.3)}
+.actions-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.muted{font-size:12px;color:var(--text2)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.toast{position:fixed;top:16px;right:16px;padding:10px 16px;border-radius:6px;display:none;z-index:30}.toast.ok{background:var(--green)}.toast.err{background:var(--red)}
+@media (max-width:980px){.layout{grid-template-columns:1fr}.header{align-items:flex-start;gap:10px;flex-direction:column}}
+</style>
+</head>
+<body>
+<div id="toast" class="toast"></div>
+
+<div id="auth" class="auth">
+  <h1>OKX Quant V2</h1>
+  <p>多币种商业控制台</p>
+  <div class="form-group"><label>用户名</label><input id="user" value="admin"></div>
+  <div class="form-group"><label>密码</label><input id="pass" type="password" placeholder="输入密码" onkeydown="if(event.key==='Enter')login()"></div>
+  <button class="btn-primary" style="width:100%" onclick="login()">登 录</button>
+</div>
+
+<div id="app" class="app">
+  <div class="header">
+    <h2>OKX Quant V2</h2>
+    <div class="actions">
+      <button class="btn-outline" onclick="openMainPanel()">主面板</button>
+      <button class="btn-outline" onclick="toast('档案由服务器部署流程维护，当前页面为只读监控', false)">档案说明</button>
+      <button class="btn-outline" onclick="loadAll()">刷新</button>
+      <button class="btn-primary" onclick="restartEngine()">重启引擎</button>
+      <button class="btn-danger" onclick="logout()">退出</button>
+    </div>
+  </div>
+  <div class="main">
+    <div class="banner">这里管理的是“多币种配置档案”。新建、编辑、启用、停用、删除档案后，需要重启交易引擎，新增或移除的实例才会真正加载。</div>
+    <div class="stats" id="stats"></div>
+    <div class="layout">
+      <div class="panel">
+        <h3 id="editor-title">新建档案</h3>
+        <div class="form-group"><label>模板</label>
+          <select id="tpl" onchange="applyTemplate()">
+            <option value="">选择模板</option>
+            <option value="btc">BTC</option>
+            <option value="eth">ETH</option>
+            <option value="sol">SOL</option>
+            <option value="xrp">XRP</option>
+            <option value="crv">CRV</option>
+            <option value="doge">DOGE</option>
+          </select>
+        </div>
+        <div class="form-group"><label>档案名称</label><input id="name" placeholder="例如 CRV 测试档"></div>
+        <div class="form-group"><label>交易对</label><input id="symbol" placeholder="CRV-USDT-SWAP"></div>
+        <div class="two">
+          <div class="form-group"><label>杠杆</label><input id="leverage" type="number" value="3"></div>
+          <div class="form-group"><label>Tick 间隔</label><input id="tick_interval" type="number" step="0.5" value="3"></div>
+        </div>
+        <div class="two">
+          <div class="form-group"><label>基础仓位</label><input id="base_position_usdt" type="number" step="0.1" value="3"></div>
+          <div class="form-group"><label>最大加仓层</label><input id="max_add_layers" type="number" value="6"></div>
+        </div>
+        <div class="two">
+          <div class="form-group"><label>加仓步长</label><input id="add_step" type="number" step="0.001" value="0.003"></div>
+          <div class="form-group"><label>加仓倍率</label><input id="add_multiplier" type="number" step="0.01" value="1.25"></div>
+        </div>
+        <div class="two">
+          <div class="form-group"><label>首次止盈</label><input id="first_tp_ratio" type="number" step="0.001" value="0.0065"></div>
+          <div class="form-group"><label>最终止盈</label><input id="final_tp_ratio" type="number" step="0.001" value="0.013"></div>
+        </div>
+        <div class="form-group"><label>保证金上限</label><input id="max_margin_ratio" type="number" step="0.05" value="0.5"></div>
+        <div class="actions-row">
+          <button class="btn-primary" onclick="saveProfile()">请求部署变更</button>
+          <button class="btn-outline" onclick="resetEditor()">重置视图</button>
+        </div>
+        <div class="muted" style="margin-top:10px">基础档案 `base` 对应当前主策略。其他档案会保存成 `config/config_*.yaml`，作为引擎重启后的附加实例。</div>
+      </div>
+      <div class="panel">
+        <h3>档案与实例</h3>
+        <div id="profiles" class="profile-grid"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+var TOKEN = window.location.hash.replace(/^#/, "") || localStorage.getItem("tk") || "";
+var profilesCache = [];
+var editingSlug = "";
+var TEMPLATES = {
+  btc:{name:"BTC 主流档",symbol:"BTC-USDT-SWAP",leverage:3,tick_interval:3,base_position_usdt:3,max_add_layers:6,add_step:0.002,add_multiplier:1.2,first_tp_ratio:0.004,final_tp_ratio:0.008,max_margin_ratio:0.45},
+  eth:{name:"ETH 主流档",symbol:"ETH-USDT-SWAP",leverage:3,tick_interval:3,base_position_usdt:4,max_add_layers:6,add_step:0.003,add_multiplier:1.25,first_tp_ratio:0.0065,final_tp_ratio:0.013,max_margin_ratio:0.5},
+  sol:{name:"SOL 波动档",symbol:"SOL-USDT-SWAP",leverage:3,tick_interval:3,base_position_usdt:3,max_add_layers:5,add_step:0.005,add_multiplier:1.25,first_tp_ratio:0.01,final_tp_ratio:0.018,max_margin_ratio:0.45},
+  xrp:{name:"XRP 波动档",symbol:"XRP-USDT-SWAP",leverage:3,tick_interval:3,base_position_usdt:3,max_add_layers:5,add_step:0.005,add_multiplier:1.25,first_tp_ratio:0.01,final_tp_ratio:0.018,max_margin_ratio:0.45},
+  crv:{name:"CRV 测试档",symbol:"CRV-USDT-SWAP",leverage:10,tick_interval:3,base_position_usdt:2,max_add_layers:6,add_step:0.002,add_multiplier:1.2,first_tp_ratio:0.01,final_tp_ratio:0.015,max_margin_ratio:0.55},
+  doge:{name:"DOGE 波动档",symbol:"DOGE-USDT-SWAP",leverage:3,tick_interval:3,base_position_usdt:3,max_add_layers:5,add_step:0.004,add_multiplier:1.2,first_tp_ratio:0.008,final_tp_ratio:0.015,max_margin_ratio:0.45}
+};
+
+function toast(msg, ok){var t=document.getElementById("toast");t.textContent=msg;t.className="toast "+(ok?"ok":"err");t.style.display="block";setTimeout(function(){t.style.display="none"},2600)}
+function fmtNum(v,d){var n=Number(v||0);return isFinite(n)?n.toFixed(d==null?2:d):"-"}
+function fmtTs(sec){if(!sec)return "-";return new Date(sec*1000).toLocaleString()}
+function badge(status,label){var cls=status==="ok"||status==="running"||status===true?"green":(status==="warn"||status==="paused"?"yellow":"red");return "<span class='badge "+cls+"'>"+label+"</span>"}
+
+function api(path, opts){
+  opts = opts || {};
+  var h = {"Content-Type":"application/json"};
+  if (TOKEN) h["Authorization"] = "Bearer " + TOKEN;
+  var url = "/api" + path;
+  return fetch(url, {method: opts.method || "GET", headers: h, body: opts.body || null})
+    .then(function(r){ if(r.status===401){ logout(); return null; } return r.json(); })
+    .catch(function(){ return null; });
+}
+
+function showApp(){
+  document.getElementById("auth").style.display = "none";
+  document.getElementById("app").style.display = "block";
+}
+
+function login(){
+  var user = document.getElementById("user").value;
+  var pass = document.getElementById("pass").value;
+  api("/auth/login", {method:"POST", body:JSON.stringify({username:user,password:pass})}).then(function(r){
+    if(r && r.code===0){
+      TOKEN = r.token;
+      localStorage.setItem("tk", TOKEN);
+      document.getElementById("pass").value = "";
+      showApp();
+      loadAll();
+    } else {
+      toast("登录失败", false);
+    }
+  });
+}
+
+function logout(){
+  var oldToken = TOKEN;
+  TOKEN = "";
+  localStorage.removeItem("tk");
+  document.getElementById("pass").value = "";
+  document.getElementById("app").style.display = "none";
+  document.getElementById("auth").style.display = "block";
+  if (oldToken) fetch("/api/auth/logout", {method:"POST", headers:{"Authorization":"Bearer " + oldToken}}).catch(function(){});
+}
+
+function openMainPanel(){
+  var url = "/";
+  if (TOKEN) {
+    localStorage.setItem("tk", TOKEN);
+  }
+  window.open(url, "_blank");
+}
+
+function applyTemplate(){
+  var key = document.getElementById("tpl").value;
+  var t = TEMPLATES[key];
+  if(!t) return;
+  Object.keys(t).forEach(function(k){
+    var el = document.getElementById(k);
+    if(el) el.value = t[k];
+  });
+}
+
+function resetEditor(){
+  editingSlug = "";
+  document.getElementById("editor-title").textContent = "新建档案";
+  ["name","symbol","leverage","tick_interval","base_position_usdt","max_add_layers","add_step","add_multiplier","first_tp_ratio","final_tp_ratio","max_margin_ratio"].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.value = "";
+  });
+  document.getElementById("leverage").value = 3;
+  document.getElementById("tick_interval").value = 3;
+  document.getElementById("base_position_usdt").value = 3;
+  document.getElementById("max_add_layers").value = 6;
+  document.getElementById("add_step").value = 0.003;
+  document.getElementById("add_multiplier").value = 1.25;
+  document.getElementById("first_tp_ratio").value = 0.0065;
+  document.getElementById("final_tp_ratio").value = 0.013;
+  document.getElementById("max_margin_ratio").value = 0.5;
+}
+
+function openCreate(){ resetEditor(); window.scrollTo({top:0,behavior:"smooth"}); }
+
+function editProfile(slug){
+  var item = profilesCache.find(function(x){ return x.slug===slug; });
+  if(!item) return;
+  editingSlug = slug;
+  document.getElementById("editor-title").textContent = slug==="base" ? "编辑基础档案" : "编辑档案: " + item.name;
+  var cfg = item.config || {};
+  document.getElementById("name").value = item.name || "";
+  document.getElementById("symbol").value = cfg.symbol || "";
+  document.getElementById("leverage").value = cfg.leverage || 3;
+  document.getElementById("tick_interval").value = cfg.tick_interval || 3;
+  document.getElementById("base_position_usdt").value = cfg.base_position_usdt || 3;
+  document.getElementById("max_add_layers").value = cfg.max_add_layers || 6;
+  document.getElementById("add_step").value = cfg.add_step || 0.003;
+  document.getElementById("add_multiplier").value = cfg.add_multiplier || 1.25;
+  document.getElementById("first_tp_ratio").value = cfg.first_tp_ratio || 0.0065;
+  document.getElementById("final_tp_ratio").value = cfg.final_tp_ratio || 0.013;
+  document.getElementById("max_margin_ratio").value = cfg.max_margin_ratio || 0.5;
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function profilePayload(){
+  return {
+    name: document.getElementById("name").value.trim(),
+    symbol: document.getElementById("symbol").value.trim().toUpperCase(),
+    leverage: Number(document.getElementById("leverage").value),
+    tick_interval: Number(document.getElementById("tick_interval").value),
+    base_position_usdt: Number(document.getElementById("base_position_usdt").value),
+    max_add_layers: Number(document.getElementById("max_add_layers").value),
+    add_step: Number(document.getElementById("add_step").value),
+    add_multiplier: Number(document.getElementById("add_multiplier").value),
+    first_tp_ratio: Number(document.getElementById("first_tp_ratio").value),
+    final_tp_ratio: Number(document.getElementById("final_tp_ratio").value),
+    max_margin_ratio: Number(document.getElementById("max_margin_ratio").value)
+  };
+}
+
+function saveProfile(){
+  toast("档案修改由服务器部署流程执行，当前页面为只读监控", false);
+}
+
+function setProfileEnabled(slug, enable){
+  toast("档案启停由服务器部署流程执行，当前页面为只读监控", false);
+}
+
+function deleteProfile(slug){
+  toast("档案删除由服务器部署流程执行，当前页面为只读监控", false);
+}
+
+function startRuntime(name){
+  api("/engine/strategies/" + name + "/start", {method:"POST"}).then(function(r){
+    toast(r && r.code===0 ? "已发送启动命令" : "启动失败", r && r.code===0);
+    setTimeout(loadAll, 1800);
+  });
+}
+
+function stopRuntime(name){
+  api("/engine/strategies/" + name + "/stop", {method:"POST"}).then(function(r){
+    toast(r && r.code===0 ? "已发送停止命令" : "停止失败", r && r.code===0);
+    setTimeout(loadAll, 1800);
+  });
+}
+
+function restartEngine(){
+  toast("引擎重启由服务器部署流程执行", false);
+}
+
+function renderStats(listing, health, engineStatus){
+  var profiles = listing.profiles || [];
+  var enabled = profiles.filter(function(x){ return x.enabled; }).length;
+  var running = profiles.filter(function(x){ return x.running; }).length;
+  var pending = profiles.filter(function(x){ return x.restart_required; }).length;
+  var html = "";
+  html += "<div class='stat'><div class='lbl'>配置档案</div><div class='val'>" + profiles.length + "</div></div>";
+  html += "<div class='stat'><div class='lbl'>已启用档案</div><div class='val'>" + enabled + "</div></div>";
+  html += "<div class='stat'><div class='lbl'>运行实例</div><div class='val'>" + running + "</div></div>";
+  html += "<div class='stat'><div class='lbl'>待重启生效</div><div class='val' style='color:" + (pending ? "var(--yellow)" : "var(--green)") + "'>" + pending + "</div></div>";
+  html += "<div class='stat'><div class='lbl'>健康评分</div><div class='val' style='color:" + ((health.score || 0) < 70 ? "var(--red)" : "var(--green)") + "'>" + fmtNum(health.score || 0, 0) + "</div></div>";
+  html += "<div class='stat'><div class='lbl'>引擎</div><div class='val' style='color:" + (engineStatus.running ? "var(--green)" : "var(--red)") + "'>" + (engineStatus.running ? "运行中" : "已停止") + "</div></div>";
+  document.getElementById("stats").innerHTML = html;
+}
+
+function renderProfiles(items){
+  var html = "";
+  if(!items.length){
+    html = "<div class='muted'>还没有多币种档案。</div>";
+  }
+  items.forEach(function(item){
+    var cfg = item.config || {};
+    var statusBadge = item.running ? badge("running", "运行中") : (item.enabled ? badge("warn", item.loaded ? "已加载" : "待加载") : badge("red", item.loaded ? "待卸载" : "已停用"));
+    var runtimeNote = item.loaded ? item.runtime_name : "重启后加载";
+    html += "<div class='profile'><div class='hdr'><div><div style='font-weight:700'>" + item.name + "</div><div class='muted'>" + item.symbol + "</div></div><div>" + statusBadge + "</div></div><div class='body'>";
+    html += "<div class='row'><span class='l'>运行名</span><span class='v'>" + runtimeNote + "</span></div>";
+    html += "<div class='row'><span class='l'>杠杆 / 仓位</span><span class='v'>" + cfg.leverage + "x / $" + fmtNum(cfg.base_position_usdt, 2) + "</span></div>";
+    html += "<div class='row'><span class='l'>层数 / 步长</span><span class='v'>" + cfg.max_add_layers + " / " + fmtNum(cfg.add_step, 4) + "</span></div>";
+    html += "<div class='row'><span class='l'>止盈</span><span class='v'>" + fmtNum(cfg.first_tp_ratio, 4) + " / " + fmtNum(cfg.final_tp_ratio, 4) + "</span></div>";
+    html += "<div class='row'><span class='l'>更新时间</span><span class='v'>" + fmtTs(item.updated_at) + "</span></div>";
+    html += "<div class='actions-row'><span class='muted'>运行状态由交易引擎控制</span>";
+    if(item.loaded && item.control_enabled){
+      html += item.running
+        ? "<button class='btn-danger' onclick=\"stopRuntime('" + item.runtime_name + "')\">停止实例</button>"
+        : "<button class='btn-primary' onclick=\"startRuntime('" + item.runtime_name + "')\">启动实例</button>";
+    }
+    if(item.toggleable && item.control_enabled){
+      html += item.enabled
+        ? "<button class='btn-warn' onclick=\"setProfileEnabled('" + item.slug + "', false)\">停用档案</button>"
+        : "<button class='btn-primary' onclick=\"setProfileEnabled('" + item.slug + "', true)\">启用档案</button>";
+    }
+    if(item.deletable && item.control_enabled){
+      html += "<button class='btn-danger' onclick=\"deleteProfile('" + item.slug + "')\">删除</button>";
+    }
+    html += "</div></div></div>";
+  });
+  document.getElementById("profiles").innerHTML = html;
+}
+
+function loadAll(){
+  Promise.all([api("/engine/profiles"), api("/ops/health"), api("/strategies/engine-status")]).then(function(res){
+    var listing = res[0];
+    var health = res[1] && res[1].code===0 ? (res[1].health || {}) : {};
+    var engineStatus = res[2] || {};
+    if(!listing || listing.code!==0){
+      toast("加载失败", false);
+      return;
+    }
+    profilesCache = listing.profiles || [];
+    renderStats(listing, health, engineStatus);
+    renderProfiles(profilesCache);
+  });
+}
+
+if(TOKEN){
+  showApp();
+  loadAll();
+}
+</script>
+</body>
+</html>

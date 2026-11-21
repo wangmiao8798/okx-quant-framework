@@ -1,0 +1,295 @@
+ai_trader:
+  config_file: config/ai_trader.json
+  # 开源默认关闭：需要时手动改为 true
+  enabled: false
+  sync_to_okx: false
+exchange:
+  okx:
+    # 1 = 模拟盘（开源默认）；0 = 实盘
+    flag: '1'
+    key_file: data/keys.enc
+    proxy: ''
+futures:
+  # 方向参数独立；未填写的字段继续回退到下方 legacy 共用值。
+  long:
+    enabled: true
+    base_position_usdt: 16
+    add_step: 0.01
+    add_multiplier: 1.1
+    max_add_layers: 6
+    first_tp_ratio: 0.005
+    final_tp_ratio: 0.008
+    trailing_enabled: true
+    trailing_tp_retreat: 0.015
+    entry_trigger_price: 0
+    entry_trigger_condition: below
+  short:
+    enabled: true
+    base_position_usdt: 16
+    add_step: 0.01
+    add_multiplier: 1.1
+    max_add_layers: 6
+    first_tp_ratio: 0.005
+    final_tp_ratio: 0.008
+    trailing_enabled: true
+    trailing_tp_retreat: 0.015
+    entry_trigger_price: 0
+    entry_trigger_condition: above
+  account_margin_buffer_ratio: 0.10
+  account_margin_scope: shared_okx_account
+  # Shared-account margin bands; below 29% the hard latch is clear and
+  # 30% remains the account-wide new-order hard line.
+  account_margin_soft_limit: 0.40
+  account_margin_hard_limit: 0.57
+  account_margin_resume_limit: 0.55
+  net_reducing_hard_margin_exempt_enabled: true
+  mgn_ratio_open_limit: 8.0
+  mgn_ratio_pause_limit: 5.0
+  mgn_ratio_emergency_limit: 3.0
+  account_risk_max_age_sec: 15
+  add_cooldown: 60
+  add_cooldown_sec: 60
+  add_multiplier: 1.1
+  add_step: 0.01
+  auto_compound_ratio: 0
+  base_position_usdt: 16
+  final_tp_ratio: 0.008
+  first_tp_ratio: 0.005
+  leverage: 5
+  leverage_ceiling: 5
+  margin_mode: cross
+  max_add_layers: 6
+  max_long_pos: 10
+  max_side_notional_usdt: 300
+  # Independent gross capacity for each hedge side; the shared field above is fallback-only.
+  max_long_side_notional_usdt: 1200
+  max_short_side_notional_usdt: 1200
+  max_total_notional_usdt: 2400
+  max_net_notional_usdt: 600
+  # Account THROTTLED mode released the dominant side far too early: RAM sat at
+  # net -238U (well inside its own 300U soft cap) yet every short add was
+  # blocked, so 15% of upside produced zero new hedge layers. Budget-first gate.
+  throttle_dominant_net_budget_gate_enabled: true
+  # TP rehang: pull stranded layer TPs back toward cost instead of leaving them
+  # pinned at historical layer entries. Re-place path fixed (exclude_qty
+  # subtracts the cancelling layer so available_qty is no longer wiped to 0);
+  # rehang now self-heals stranded TPs live, matching CRV.
+  tp_rehang_enabled: true
+  tp_rehang_dry_run: false
+  tp_rehang_min_gap_ratio: 0.02
+  tp_rehang_step_ratio: 0.5
+  tp_rehang_cooldown_sec: 900
+  tp_rehang_state_ttl_hours: 24
+  # Clamp TP to stay inside the exchange price band (OKX 51006).
+  tp_price_band_enabled: true
+  tp_price_band_gap_ratio: 0.003
+  tp_rehang_max_times: 4
+  tp_rehang_net_headroom: 0.8
+  margin_first_capacity_enabled: false
+  margin_first_max_margin_ratio: 0.50
+  margin_first_ignore_floating_loss: true
+  margin_first_relax_edge_enabled: true
+  conditional_missing_side_repair_enabled: true
+  missing_side_repair_allow_legacy_state: true
+  missing_side_repair_imbalance_threshold: 0.70
+  missing_side_repair_cooldown_sec: 60
+  # Below the 57% account hard line, permit only small rate-limited short
+  # repair orders. Ordinary additions still remain gated.
+  active_inventory_repair_enabled: false
+  # Missing-side repair corridor for RAM (long side only, capped at 8U/step).
+  # Declared but kept disabled, matching CRV/FARTCOIN: without the symbol here
+  # RAM had no corridor at all, so crossing the hard line left it with zero
+  # way to rebuild a missing leg. Flipping this bool is the only change needed
+  # to arm it — do that only with an explicit decision.
+  inventory_repair_hard_override_enabled: false
+  inventory_repair_hard_override_symbol: RAM-USDT-SWAP
+  inventory_repair_hard_override_margin_ratio: 0.63
+  inventory_repair_hard_override_mgn_ratio_min: 12.0
+  inventory_repair_hard_override_max_step_notional_usdt: 8.0
+  # All repair margin gates are explicit and stay strictly below the account
+  # hard line. This prevents constructor defaults from diverging from policy.
+  inventory_repair_imbalance_gate: 0.70
+  inventory_repair_side_cap_multiplier: 1.10
+  inventory_repair_max_margin_ratio: 0.15
+  inventory_repair_ignore_layer_cap: true
+  inventory_repair_missing_side_margin_ratio: 0.15
+  inventory_repair_missing_side_resume_ratio: 0.12
+  inventory_repair_cooldown_sec: 60
+  inventory_repair_fast_cooldown_sec: 30
+  inventory_repair_medium_cooldown_sec: 60
+  missing_side_repair_max_margin_ratio: 0.15
+  # Net-reducing repair orders may clear at modeled break-even; ordinary adds
+  # keep the normal expected-edge floor.
+  inventory_repair_relax_edge_enabled: true
+  dynamic_side_notional_enabled: false
+  dynamic_side_notional_equity_ratio: 0.30
+  dynamic_side_notional_margin_budget_ratio: 0.80
+  dynamic_side_notional_max_margin_ratio: 0.35
+  dynamic_side_notional_max_multiplier: 1.40
+  weak_side_margin_ratio: 1.05
+  weak_side_margin_imbalance_threshold: 0.25
+  max_margin_ratio: 0.28
+  max_short_pos: 10
+  max_tp_orders: 34
+  # Cover a small residual TP gap without disabling ordinary profit floors.
+  # This profile is the only production opt-in; the order remains reduce-only
+  # and is bounded by both gap ratio and maximum expected loss.
+  coverage_safety_tp_enabled: true
+  coverage_safety_tp_max_gap_ratio: 0.10
+  coverage_safety_tp_max_loss_usdt: 0.10
+  # A safety-coverage event can release at most one weak-side repair order.
+  # Position reduction resets the allowance; position growth does not.
+  coverage_safety_tp_repair_limit: 1
+  paired_add_allow_inventory_pause: false
+  paired_add_max_margin_ratio: 0.15
+  daily_loss_limit_usdt: 2000
+  daily_drawdown: 0.30
+  reduce_only_mode: false
+  min_open_equity_usdt: 40
+  position_pct: 0.01
+  reserved_usdt: 20
+  symbol: RAM-USDT-SWAP
+  trailing_tp_retreat: 1.015
+  grid_bias_ratio: 0.35
+  max_net_notional_soft_usdt: 300
+  inventory_hard_hedge_enabled: true
+  inventory_hard_hedge_confirmations: 2
+  inventory_hard_hedge_cooldown_sec: 60
+  inventory_hard_hedge_max_notional_usdt: 150
+  grid_atr_enabled: true
+  grid_atr_multiplier: 0.6
+  grid_atr_min_step: 0.005
+  grid_atr_max_step: 0.02
+  grid_range_enabled: true
+  grid_lower_price: 5.0
+  grid_upper_price: 13.0
+  grid_boundary_buffer_ratio: 0.002
+  grid_boundary_action: pause
+  # Keep ordinary dominant-side adds blocked, but allow small net-neutral
+  # average-down pairs when price is below the established long entry.
+  paired_add_enabled: false
+  paired_add_use_hard_total_cap: true
+  paired_average_down_enabled: false
+  paired_add_cooldown_sec: 60
+  paired_add_trigger_ratio: 0.0075
+  paired_add_ignore_wick: true
+  # Keep at least one normal grid layer below the shared 30% hard line.
+  over_cap_unwind_enabled: true
+  grid_expand_margin_ratio: 0.50
+  min_edge_ratio: 0.0045
+  min_expected_net_usdt: 0.01
+  trend_bias_strength: 1.04
+  hard_stop_enabled: false
+  max_loss_usdt: 30
+  max_drawdown: 0.08
+  startup_auto_hedge_missing_side: false
+  startup_rebuild_grids: true
+global:
+  # 开源默认模拟盘，须与 exchange.okx.flag='1' 保持一致
+  demo: true
+  enable_futures: true
+  enable_spot: false
+  kline_interval: 5m
+  kline_limit: 210
+  tick_interval: 3
+kelly:
+  default_kelly: 1.25
+  enabled: true
+  max_kelly: 1.5
+  min_kelly: 1.02
+logging:
+  backup_count: 7
+  console: false
+  file: logs/trading.log
+  level: INFO
+  max_size_mb: 10
+moca:
+  apply_live: false
+  adaptation_range:
+    add_layers:
+    - 1.0
+    - 1.3
+    grid_density:
+    - 1.4
+    - 1.8
+    leverage:
+    - 1.0
+    - 1.2
+    tp_ratio:
+    - 1.0
+    - 1.3
+  atr_period: 14
+  bb_period: 21
+  bb_std: 2.1
+  enabled: true
+  thresholds:
+    extreme_volatility: 1.1
+    high_volatility: 1.04
+    trend_strength: 30
+    volume_spike: 3.4
+    wick_ratio: 2.8
+  timeframes:
+  - 5m
+  - 15m
+  - 1H
+network:
+  order_retry:
+    max_retries: 3
+    retry_delay: 1
+  reconnect:
+    exponential_backoff: true
+    max_retries: 11
+    retry_interval: 5
+  websocket:
+    enabled: true
+    ping_interval: 21
+notify:
+  email:
+    email_env: OKX_NOTIFY_SMTP_EMAIL
+    enabled: true
+    min_interval: 61
+    password_env: OKX_NOTIFY_SMTP_PASSWORD
+    smtp_port: 465
+    smtp_server: smtp.qq.com
+    to_env: OKX_NOTIFY_SMTP_TO
+recorder:
+  auto_export_days: 7
+  export_dir: data/exports
+  pnl_file: data/pnl_records_ram.csv
+risk:
+  account_budget:
+    target_margin_ratio: 0.45
+    reserve_equity_ratio: 0.10
+    utilization: 0.80
+    reservation_ttl_sec: 20
+  black_swan:
+    auto_restart: false
+    consecutive_drop: 3
+    cooldown_seconds: 610
+    enabled: true
+    price_jump_threshold: 1.07
+  liquidation:
+    action_cooldown_seconds: 60
+    confirmation_checks: 2
+    emergency_distance_rate: 0.07
+    emergency_reduce_ratio: 0.25
+    enabled: true
+    pause_opening_seconds: 120
+    safety_distance_rate: 0.15
+  stop_loss:
+    cooldown_seconds: 610
+    enabled: false
+    total_loss_pct: 10
+segment_close:
+  close_offset: 0.01
+  enable: false
+  order_refresh_ms: 2000
+  price_buffer: 0.004
+  segment_layer_limit: 2
+profile:
+  slug: ram
+  name: RAM 实验档
+  symbol: RAM-USDT-SWAP
+  runtime_name: futures_ram
+  created_at: 1783300000
+  updated_at: 1783300000

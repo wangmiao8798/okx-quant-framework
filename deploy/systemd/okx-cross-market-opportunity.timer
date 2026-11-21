@@ -1,0 +1,12 @@
+[Unit]
+Description=Collect read-only cross-market opportunity snapshots every 5 minutes
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=5min
+AccuracySec=10sec
+Persistent=true
+Unit=okx-cross-market-opportunity.service
+
+[Install]
+WantedBy=timers.target

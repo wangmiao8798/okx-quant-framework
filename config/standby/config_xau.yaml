@@ -1,0 +1,229 @@
+ai_trader:
+  config_file: config/ai_trader.json
+  enabled: true
+  sync_to_okx: true
+exchange:
+  okx:
+    flag: '0'
+    key_file: data/keys.enc
+    proxy: ''
+futures:
+  long:
+    enabled: true
+    base_position_usdt: 4.0
+    add_step: 0.0035
+    add_multiplier: 1.15
+    max_add_layers: 2
+    first_tp_ratio: 0.005
+    final_tp_ratio: 0.007
+    trailing_enabled: true
+    trailing_tp_retreat: 0.004
+    entry_trigger_price: 0
+    entry_trigger_condition: below
+  short:
+    enabled: true
+    base_position_usdt: 4.0
+    add_step: 0.0035
+    add_multiplier: 1.15
+    max_add_layers: 2
+    first_tp_ratio: 0.005
+    final_tp_ratio: 0.007
+    trailing_enabled: true
+    trailing_tp_retreat: 0.004
+    entry_trigger_price: 0
+    entry_trigger_condition: above
+  account_margin_buffer_ratio: 0.10
+  account_margin_scope: shared_okx_account
+  account_margin_soft_limit: 0.20
+  account_margin_hard_limit: 0.30
+  account_margin_resume_limit: 0.29
+  mgn_ratio_open_limit: 8.0
+  mgn_ratio_pause_limit: 5.0
+  mgn_ratio_emergency_limit: 3.0
+  account_risk_max_age_sec: 15
+  add_cooldown: 180
+  add_rate_limit_window_sec: 300
+  regular_add_rate_limit_margin_usdt: 10
+  inventory_repair_rate_limit_margin_usdt: 20
+  paired_add_rate_limit_margin_usdt: 20
+  add_multiplier: 1.15
+  add_step: 0.0035
+  auto_compound_ratio: 0
+  base_position_usdt: 4.0
+  final_tp_ratio: 0.007
+  first_tp_ratio: 0.005
+  leverage: 3
+  margin_mode: cross
+  max_add_layers: 2
+  max_long_pos: 10
+  max_long_side_notional_usdt: 150
+  max_short_side_notional_usdt: 150
+  max_total_notional_usdt: 300
+  max_net_notional_soft_usdt: 80
+  max_net_notional_usdt: 150
+  max_short_pos: 10
+  max_margin_ratio: 0.10
+  max_tp_orders: 16
+  tp_compact_target_orders: 4
+  grid_bias_ratio: 0.25
+  grid_atr_enabled: true
+  grid_atr_multiplier: 0.6
+  grid_atr_min_step: 0.0008
+  grid_atr_max_step: 0.004
+  grid_range_enabled: true
+  grid_lower_price: 4200.0
+  grid_upper_price: 4400.0
+  grid_boundary_buffer_ratio: 0.002
+  grid_boundary_action: pause
+  grid_expand_margin_ratio: 0.20
+  weak_side_margin_ratio: 1.05
+  weak_side_margin_imbalance_threshold: 0.25
+  dynamic_side_notional_enabled: false
+  dynamic_side_notional_equity_ratio: 0.30
+  dynamic_side_notional_margin_budget_ratio: 0.80
+  dynamic_side_notional_max_margin_ratio: 0.35
+  dynamic_side_notional_max_multiplier: 1.40
+  active_inventory_repair_enabled: false
+  inventory_repair_imbalance_gate: 0.50
+  inventory_repair_side_cap_multiplier: 1.05
+  inventory_repair_max_margin_ratio: 0.15
+  inventory_repair_missing_side_margin_ratio: 0.15
+  inventory_repair_missing_side_resume_ratio: 0.12
+  inventory_repair_relax_edge_enabled: true
+  inventory_repair_ignore_layer_cap: true
+  paired_add_enabled: false
+  paired_add_allow_inventory_pause: false
+  paired_add_max_margin_ratio: 0.15
+  paired_add_use_hard_total_cap: true
+  paired_average_down_enabled: false
+  paired_add_cooldown_sec: 180
+  paired_add_trigger_ratio: 0.0035
+  coverage_safety_tp_enabled: true
+  coverage_safety_tp_max_gap_ratio: 0.10
+  coverage_safety_tp_max_loss_usdt: 0.05
+  coverage_safety_tp_repair_limit: 1
+  hard_stop_enabled: true
+  reduce_only_mode: false
+  max_loss_usdt: 10
+  max_drawdown: 0.05
+  daily_loss_limit_usdt: 5
+  daily_drawdown: 0.03
+  min_edge_ratio: 0.0025
+  min_expected_net_usdt: 0.01
+  tp_funding_buffer_ratio: 0.0015
+  min_open_equity_usdt: 40
+  position_pct: 0.01
+  reserved_usdt: 20
+  startup_auto_hedge_missing_side: false
+  startup_rebuild_grids: true
+  symbol: XAU-USDT-SWAP
+  trailing_tp_retreat: 1.004
+  trend_bias_strength: 1.05
+global:
+  demo: false
+  enable_futures: true
+  enable_spot: false
+  kline_interval: 5m
+  kline_limit: 210
+  tick_interval: 3
+kelly:
+  default_kelly: 1.25
+  enabled: true
+  max_kelly: 1.5
+  min_kelly: 1.02
+logging:
+  backup_count: 7
+  console: false
+  file: logs/trading.log
+  level: INFO
+  max_size_mb: 51
+moca:
+  apply_live: false
+  adaptation_range:
+    add_layers:
+    - 1.0
+    - 1.25
+    grid_density:
+    - 1.0
+    - 1.5
+    leverage:
+    - 1.0
+    - 1.1
+    tp_ratio:
+    - 1.0
+    - 1.2
+  atr_period: 14
+  bb_period: 21
+  bb_std: 2.1
+  enabled: true
+  thresholds:
+    extreme_volatility: 1.02
+    high_volatility: 1.01
+    trend_strength: 22
+    volume_spike: 2.5
+    wick_ratio: 2.0
+  timeframes:
+  - 5m
+  - 15m
+  - 1H
+network:
+  order_retry:
+    max_retries: 3
+    retry_delay: 1
+  reconnect:
+    exponential_backoff: true
+    max_retries: 11
+    retry_interval: 5
+  websocket:
+    enabled: true
+    ping_interval: 21
+notify:
+  email:
+    email_env: OKX_NOTIFY_SMTP_EMAIL
+    enabled: true
+    min_interval: 61
+    password_env: OKX_NOTIFY_SMTP_PASSWORD
+    smtp_port: 465
+    smtp_server: smtp.qq.com
+    to_env: OKX_NOTIFY_SMTP_TO
+recorder:
+  auto_export_days: 7
+  export_dir: data/exports
+  pnl_file: data/pnl_records_xau.csv
+risk:
+  account_budget:
+    target_margin_ratio: 0.20
+    reserve_equity_ratio: 0.10
+    utilization: 0.80
+    reservation_ttl_sec: 20
+  black_swan:
+    auto_restart: false
+    consecutive_drop: 3
+    cooldown_seconds: 610
+    enabled: true
+    price_jump_threshold: 1.03
+  liquidation:
+    action_cooldown_seconds: 60
+    confirmation_checks: 2
+    emergency_distance_rate: 0.07
+    emergency_reduce_ratio: 0.25
+    enabled: true
+    pause_opening_seconds: 120
+    safety_distance_rate: 0.15
+  stop_loss:
+    cooldown_seconds: 610
+    enabled: true
+    total_loss_pct: 4
+segment_close:
+  close_offset: 0.01
+  enable: false
+  order_refresh_ms: 2000
+  price_buffer: 0.002
+  segment_layer_limit: 2
+profile:
+  slug: xau
+  name: XAU 实验档
+  symbol: XAU-USDT-SWAP
+  runtime_name: futures_xau
+  created_at: 1790384000
+  updated_at: 1790384000

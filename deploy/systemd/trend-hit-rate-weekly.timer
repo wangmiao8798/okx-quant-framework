@@ -1,0 +1,10 @@
+[Unit]
+Description=OKX ADX 趋势命中率每周报表定时器
+
+[Timer]
+OnCalendar=Mon *-*-* 08:15:00
+Persistent=true
+Unit=trend-hit-rate-weekly.service
+
+[Install]
+WantedBy=timers.target

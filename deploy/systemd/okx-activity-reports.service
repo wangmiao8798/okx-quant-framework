@@ -1,0 +1,14 @@
+[Unit]
+Description=Refresh OKX Quant Rolling 24h Operational Reports
+After=network-online.target okx-trading-data-sync.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/opt/okx_quant
+ExecStart=/opt/okx_quant/venv/bin/python3 /opt/okx_quant/scripts/order_activity_report.py --hours 24 --json-out /opt/okx_quant/data/order_activity_report_24h.json
+ExecStart=/opt/okx_quant/venv/bin/python3 /opt/okx_quant/scripts/capital_efficiency_report.py --hours 24 --json-out /opt/okx_quant/data/capital_efficiency_report_24h.json
+ExecStart=/opt/okx_quant/venv/bin/python3 /opt/okx_quant/scripts/round_trip_accounting.py --hours 24 --json-out /opt/okx_quant/data/round_trip_accounting_24h.json
+Nice=5

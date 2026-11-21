@@ -1,0 +1,25 @@
+[Unit]
+Description=Read-only BTC/ETH to US equities opportunity radar
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/opt/okx_quant
+ExecStart=/opt/okx_quant/venv/bin/python3 /opt/okx_quant/scripts/cross_market_opportunity_radar.py
+ExecStartPost=/opt/okx_quant/venv/bin/python3 /opt/okx_quant/scripts/cross_market_forward_research.py
+Nice=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+RestrictRealtime=true
+InaccessiblePaths=/opt/okx_quant/data/keys.enc
+ReadWritePaths=/opt/okx_quant/data

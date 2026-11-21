@@ -1,0 +1,12 @@
+[Unit]
+Description=Refresh OKX Quant Rolling 24h Operational Reports every 15 minutes
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=15min
+AccuracySec=30sec
+Persistent=true
+Unit=okx-activity-reports.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,9 @@
+# AI Trader 网关配置（示例）
+# 复制本文件为 config/ai_trader.json 后填入自己的值。
+# 真实配置已在 .gitignore 中排除，切勿提交带真实 token 的文件。
+token: YOUR_AI_TRADER_TOKEN
+agent_id: 0
+email: your-email@example.com
+futures:
+  order_chase_timeout_sec: 12
+  order_chase_gap_ratio: 0.0015

@@ -1,0 +1,18 @@
+public_read_only: true
+advisory_only: true
+quality:
+  max_age_seconds: 300
+  min_equities: 2
+  window_tolerance_seconds: 90
+thresholds:
+  lead_pct: 2.0
+  estimated_round_trip_cost_pct: 0.20
+themes:
+  btc_equities:
+    crypto: BTC-USDT-SWAP
+    equities: [IBIT, MSTR, COIN, MARA]
+    benchmark: QQQ
+  eth_equities:
+    crypto: ETH-USDT-SWAP
+    equities: [ETHA, COIN]
+    benchmark: QQQ

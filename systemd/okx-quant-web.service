@@ -1,0 +1,44 @@
+[Unit]
+Description=OKX 量化交易系统 - Web 管理面板
+Documentation=https://github.com/your-org/okx_quant
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+
+WorkingDirectory=/opt/okx_quant
+Environment=PATH=/opt/okx_quant/venv/bin:/usr/bin:/bin
+EnvironmentFile=-/etc/okx-quant/notifications.env
+ExecStart=/opt/okx_quant/venv/bin/python -m uvicorn web.main:app --host 127.0.0.1 --port 8799 --workers 1
+
+KillSignal=SIGTERM
+TimeoutStopSec=10
+SendSIGKILL=yes
+
+StandardOutput=append:/opt/okx_quant/logs/web-service.log
+StandardError=append:/opt/okx_quant/logs/web-service.log
+
+Restart=on-failure
+RestartSec=5
+StartLimitBurst=5
+
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictRealtime=true
+ReadOnlyPaths=/opt/okx_quant/config
+InaccessiblePaths=/opt/okx_quant/data/keys.enc /opt/okx_quant/bin
+ReadWritePaths=/opt/okx_quant/data /opt/okx_quant/logs /opt/okx_quant/web/web_config.json
+UMask=0077
+
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

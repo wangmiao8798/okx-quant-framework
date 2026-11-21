@@ -1,0 +1,189 @@
+ai_trader:
+  config_file: config/ai_trader.json
+  enabled: true
+  sync_to_okx: true
+exchange:
+  okx:
+    flag: '0'
+    key_file: data/keys.enc
+    proxy: ''
+futures:
+  long:
+    enabled: true
+    base_position_usdt: 2.0
+    add_step: 0.003
+    add_multiplier: 1.2
+    max_add_layers: 6
+    first_tp_ratio: 0.007
+    final_tp_ratio: 0.012
+    trailing_enabled: true
+    trailing_tp_retreat: 0.015
+    entry_trigger_price: 0
+    entry_trigger_condition: below
+  short:
+    enabled: true
+    base_position_usdt: 2.0
+    add_step: 0.003
+    add_multiplier: 1.2
+    max_add_layers: 6
+    first_tp_ratio: 0.007
+    final_tp_ratio: 0.012
+    trailing_enabled: true
+    trailing_tp_retreat: 0.015
+    entry_trigger_price: 0
+    entry_trigger_condition: above
+  account_margin_buffer_ratio: 0.10
+  account_margin_scope: shared_okx_account
+  account_margin_soft_limit: 0.52
+  account_margin_hard_limit: 0.60
+  account_margin_resume_limit: 0.599
+  mgn_ratio_open_limit: 8.0
+  mgn_ratio_pause_limit: 5.0
+  mgn_ratio_emergency_limit: 3.0
+  account_risk_max_age_sec: 15
+  max_long_side_notional_usdt: 140
+  max_short_side_notional_usdt: 140
+  max_total_notional_usdt: 280
+  max_net_notional_usdt: 50
+  add_cooldown: 120
+  add_multiplier: 1.2
+  add_step: 0.003
+  auto_compound_ratio: 0
+  base_position_usdt: 2.0
+  final_tp_ratio: 0.012
+  first_tp_ratio: 0.007
+  leverage: 5
+  margin_mode: cross
+  max_add_layers: 6
+  max_long_pos: 10
+  max_side_notional_usdt: 140
+  max_net_notional_usdt: 50
+  weak_side_margin_ratio: 1.05
+  weak_side_margin_imbalance_threshold: 0.25
+  max_margin_ratio: 0.5
+  max_short_pos: 10
+  max_tp_orders: 20
+  symbol: XRP-USDT-SWAP
+  trailing_tp_retreat: 1.015
+  grid_bias_ratio: 0.35
+  grid_expand_margin_ratio: 0.4
+  min_edge_ratio: 0.0045
+  min_expected_net_usdt: 0.02
+  min_open_equity_usdt: 40
+  position_pct: 0.015
+  reserved_usdt: 20
+  trend_bias_strength: 1.05
+  hard_stop_enabled: true
+  startup_auto_hedge_missing_side: false
+  startup_rebuild_grids: true
+global:
+  demo: false
+  enable_futures: true
+  enable_spot: false
+  kline_interval: 5m
+  kline_limit: 210
+  tick_interval: 3
+kelly:
+  default_kelly: 1.25
+  enabled: true
+  max_kelly: 1.5
+  min_kelly: 1.02
+logging:
+  backup_count: 7
+  console: false
+  file: logs/trading.log
+  level: INFO
+  max_size_mb: 51
+moca:
+  adaptation_range:
+    add_layers:
+    - 1.0
+    - 1.5
+    grid_density:
+    - 1.5
+    - 2.1
+    leverage:
+    - 1.0
+    - 1.5
+    tp_ratio:
+    - 1.0
+    - 1.5
+  atr_period: 14
+  bb_period: 21
+  bb_std: 2.1
+  enabled: true
+  thresholds:
+    extreme_volatility: 1.08
+    high_volatility: 1.03
+    trend_strength: 25
+    volume_spike: 3.1
+    wick_ratio: 2.5
+  timeframes:
+  - 5m
+  - 15m
+  - 1H
+network:
+  order_retry:
+    max_retries: 3
+    retry_delay: 1
+  reconnect:
+    exponential_backoff: true
+    max_retries: 11
+    retry_interval: 5
+  websocket:
+    enabled: true
+    ping_interval: 21
+notify:
+  email:
+    email_env: OKX_NOTIFY_SMTP_EMAIL
+    enabled: true
+    min_interval: 61
+    password_env: OKX_NOTIFY_SMTP_PASSWORD
+    smtp_port: 465
+    smtp_server: smtp.qq.com
+    to_env: OKX_NOTIFY_SMTP_TO
+recorder:
+  auto_export_days: 7
+  export_dir: data/exports
+  pnl_file: data/pnl_records.csv
+risk:
+  black_swan:
+    auto_restart: false
+    consecutive_drop: 3
+    cooldown_seconds: 610
+    enabled: true
+    price_jump_threshold: 1.05
+  liquidation:
+    emergency_margin_rate: 1.2
+    enabled: true
+    leverage_step: 1
+    reduce_position_ratio: 1.25
+    safety_margin_rate: 1.5
+  stop_loss:
+    cooldown_seconds: 610
+    enabled: true
+    total_loss_pct: 12
+segment_close:
+  close_offset: 0.01
+  enable: false
+  order_refresh_ms: 2000
+  price_buffer: 0.003
+  segment_layer_limit: 3
+spot:
+  first_layer_ratio: 0.15
+  grid_step: 0.003
+  invest_usdt: 110
+  layer_multiplier: 1.2
+  max_layers: 11
+  min_order_interval: 61
+  symbol: XRP-USDT-SWAP
+  take_profit_ratio: 0.6
+  tp_sell_ratios:
+  - 1.3
+  - 1.3
+  - 1.2
+  - 1.1
+  - 1.1
+stop_loss:
+  enabled: true
+  total_loss_pct: 20

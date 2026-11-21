@@ -1,0 +1,25 @@
+[Unit]
+Description=Read-only DRAM ETF, memory equities and OKX cross-market research
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/opt/okx_quant
+ExecStart=/opt/okx_quant/venv/bin/python3 /opt/okx_quant/scripts/dram_cross_market_monitor.py
+ExecStartPost=/opt/okx_quant/venv/bin/python3 /opt/okx_quant/scripts/dram_weighted_forward_research.py
+Nice=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+RestrictRealtime=true
+InaccessiblePaths=/opt/okx_quant/data/keys.enc
+ReadWritePaths=/opt/okx_quant/data

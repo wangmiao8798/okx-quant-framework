@@ -1,0 +1,82 @@
+# ---- OKX 量化交易系统 .gitignore ----
+
+# 运行时数据（密钥文件、PID）
+/data/cross_market_opportunity.db
+/data/cross_market_opportunity_report.json
+/data/*
+!/data/.gitkeep
+
+# 日志
+/logs/*
+!/logs/.gitkeep
+
+# Python 缓存
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# 虚拟环境
+venv/
+.venv/
+.env/
+*.env
+*.codex.bak
+
+# 配置中的真实凭证 / 本地运行配置（只提交 .example 模板）
+web/web_config.json
+config/ai_trader.json
+config/*.local.yaml
+notifications.env
+
+*.db
+*.sqlite
+*.sqlite3
+*.db-shm
+*.db-wal
+*.log
+!data/.gitkeep
+!logs/.gitkeep
+*.bak
+*.bak.*
+data/*.json
+data/*.csv
+data/*.pid
+data/*.out
+backup*/
+backups/
+*.tar.gz
+*.zip
+*.enc
+*.key
+*.pem
+*.p12
+*.crt
+.env
+*.bak[0-9]*
+*.bak_*
+*.bak-*
+*.bak.autofix_*
+*.bak.hermes_*
+_archive/
+backup/
+
+# Generated reports
+reports/
+
+# Deployment and editor snapshots. Keep these outside the repository because
+# they can contain live orders, account state, or sensitive configuration.
+/rollback/
+/.deploy_staging_*/
+*.orig
+*.bak*

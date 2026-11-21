@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" href="/static/icons/app-icon.svg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>OKX Quant Panel</title>
+<link rel="manifest" >
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0f1117;--bg2:#1a1d2e;--bg3:#242840;--text:#e8eaed;--text2:#9aa0b5;--accent:#4f8cff;--green:#34d399;--red:#f87171;--card:#1e2235;--border:#2a2e45;--radius:8px}
+body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+input,select,textarea{background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:6px;width:100%;font-size:14px}
+input:focus{outline:none;border-color:var(--accent)}
+button{cursor:pointer;border:none;border-radius:6px;padding:8px 16px;font-size:14px;transition:all .2s;color:#fff}
+.btn-primary{background:var(--accent)}.btn-primary:hover{opacity:.85}
+.btn-danger{background:var(--red)}.btn-sm{padding:4px 10px;font-size:12px}
+.login-page{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:28px;background:radial-gradient(circle at 12% 18%,rgba(79,140,255,.22),transparent 30%),radial-gradient(circle at 88% 12%,rgba(52,211,153,.16),transparent 26%),linear-gradient(135deg,#090b12,#111827 48%,#172033);overflow:auto}
+.auth-shell{width:min(1120px,100%);display:grid;grid-template-columns:1.18fr .82fr;gap:24px;align-items:stretch}
+.hero-panel,.login-box{background:rgba(30,34,53,.78);border:1px solid rgba(255,255,255,.08);box-shadow:0 24px 80px rgba(0,0,0,.35);backdrop-filter:blur(18px);border-radius:24px}
+.hero-panel{padding:34px;position:relative;overflow:hidden}
+.hero-kicker{display:inline-flex;gap:8px;align-items:center;color:#b9c7ff;background:rgba(79,140,255,.12);border:1px solid rgba(79,140,255,.24);padding:7px 12px;border-radius:999px;font-size:13px;margin-bottom:22px}
+.hero-panel h1{font-size:42px;line-height:1.12;margin-bottom:14px;letter-spacing:-1px}.hero-panel h1 span{color:#79a7ff}.hero-panel p{color:var(--text2);font-size:16px;line-height:1.75;max-width:620px}.hero-actions{display:flex;gap:12px;margin:24px 0;flex-wrap:wrap}.ghost-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12)}
+.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:24px}.feature-card{background:rgba(15,17,23,.62);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px}.feature-card b{display:block;margin-bottom:6px}.feature-card span{color:var(--text2);font-size:12px;line-height:1.5}.hero-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:24px}.hero-metric{padding:14px;border-radius:14px;background:linear-gradient(180deg,rgba(79,140,255,.15),rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.08)}.hero-metric .n{font-size:22px;font-weight:800}.hero-metric .t{font-size:12px;color:var(--text2);margin-top:4px}
+.login-box{padding:28px;width:100%}.brand-mark{display:flex;align-items:center;gap:10px;margin-bottom:18px}.brand-icon{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),#34d399);font-size:22px}.brand-title{font-weight:800;font-size:19px}.brand-sub{color:var(--text2);font-size:12px;margin-top:2px}.auth-tabs{display:grid;grid-template-columns:1fr 1fr;background:rgba(15,17,23,.72);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:18px}.auth-tab{background:transparent;color:var(--text2);padding:10px;border-radius:9px}.auth-tab.active{background:var(--accent);color:#fff}.auth-form{display:none}.auth-form.active{display:block}.login-box .form-group{margin-bottom:14px}.login-box .form-group label{display:block;margin-bottom:6px;color:var(--text2);font-size:13px}.login-box button.primary-wide{width:100%;padding:12px;font-size:15px;font-weight:700}.auth-note{font-size:12px;color:var(--text2);line-height:1.6;margin-top:14px;padding:12px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06)}.switch-line{text-align:center;color:var(--text2);font-size:13px;margin-top:16px}.switch-line a{color:#8bb2ff;cursor:pointer;text-decoration:none}.risk-list{display:grid;gap:8px;margin-top:14px}.risk-list div{font-size:12px;color:var(--text2);display:flex;gap:8px}.risk-list div:before{content:'✓';color:var(--green)}@media(max-width:860px){.auth-shell{grid-template-columns:1fr}.hero-panel h1{font-size:32px}.feature-grid,.hero-metrics{grid-template-columns:1fr}.login-page{padding:16px}}
+.app{display:none}.sidebar{width:200px;background:var(--bg2);border-right:1px solid var(--border);position:fixed;height:100vh;padding:12px 0}
+.sidebar .logo{padding:16px 16px;font-size:17px;font-weight:700}.sidebar .logo span{color:var(--accent)}
+.sidebar .nav-item{display:flex;align-items:center;gap:8px;padding:10px 16px;cursor:pointer;color:var(--text2);font-size:14px;border-left:3px solid transparent}
+.sidebar .nav-item:hover{background:var(--bg3);color:var(--text)}
+.sidebar .nav-item.active{background:var(--bg3);color:var(--accent);border-left-color:var(--accent)}
+.customer-nav{display:none}
+.customer-main{display:none;flex:1;width:100%;min-width:0}
+.customer-shell{max-width:1100px;margin:0 auto}
+.customer-topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.customer-title{font-size:22px;font-weight:800}.customer-subtitle{color:var(--text2);font-size:13px;margin-top:4px}
+.customer-balance{background:linear-gradient(135deg,#1f3159,#1f463f);border:1px solid rgba(121,167,255,.28);border-radius:16px;padding:22px;margin-bottom:16px;box-shadow:0 16px 40px rgba(0,0,0,.18)}
+.customer-balance .eyebrow{color:#c7d7ff;font-size:12px}.customer-balance .amount{font-size:34px;font-weight:800;margin:5px 0}.customer-balance .meta{display:flex;gap:18px;flex-wrap:wrap;color:#c8d2e8;font-size:12px}
+.customer-tabs{display:flex;gap:8px;margin-bottom:18px;overflow:auto}.customer-tab{background:var(--bg2);border:1px solid var(--border);color:var(--text2);padding:9px 14px;border-radius:999px;white-space:nowrap}.customer-tab.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.customer-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px}.customer-card h3{font-size:15px;margin-bottom:12px}.customer-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.customer-strategy{background:linear-gradient(180deg,#20263b,#1b2031);border:1px solid var(--border);border-radius:14px;padding:16px}.customer-strategy .head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.customer-strategy h3{font-size:16px;margin:0}.customer-strategy .symbol{font-size:12px;color:var(--text2);margin-top:5px}.customer-strategy .profit{font-size:24px;font-weight:800;color:var(--green);margin:16px 0 2px}.customer-strategy .profit.negative{color:var(--red)}.customer-strategy .profit-label{font-size:11px;color:var(--text2)}.customer-strategy .metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}.customer-strategy .metric{background:rgba(15,17,23,.42);border-radius:8px;padding:9px}.customer-strategy .metric b{display:block;font-size:14px}.customer-strategy .metric span{font-size:11px;color:var(--text2)}.customer-detail{display:none;border-top:1px solid var(--border);padding-top:12px;margin-top:12px}.customer-detail.open{display:block}.customer-detail .row{font-size:12px}.customer-actions{display:flex;gap:8px;flex-wrap:wrap}.customer-note{font-size:12px;color:var(--text2);line-height:1.6}.customer-warning{color:#fbbf24;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.2);border-radius:8px;padding:10px;font-size:12px;line-height:1.55}
+@media(max-width:700px){.main{margin-left:0;padding:14px}.sidebar{display:none}.customer-main{display:block}.customer-balance .amount{font-size:28px}}
+.main{margin-left:200px;padding:20px;min-height:100vh;flex:1;min-width:0}
+.page{display:none}.page.active{display:block}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:20px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.stat-card .lbl{color:var(--text2);font-size:12px}.stat-card .val{font-size:22px;font-weight:700;margin-top:4px}
+.stat-card .val.green{color:var(--green)}.stat-card .val.red{color:var(--red)}
+.strat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px}
+.strat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.strat-card .hdr{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border)}
+.strat-card .hdr h3{font-size:15px;display:flex;align-items:center;gap:6px}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+.badge.running{background:rgba(52,211,153,.15);color:var(--green);border:1px solid rgba(52,211,153,.3)}
+.badge.stopped{background:rgba(248,113,113,.15);color:var(--red);border:1px solid rgba(248,113,113,.3)}
+.strat-card .body{padding:12px 16px}
+.row{display:flex;justify-content:space-between;padding:5px 0;font-size:13px;border-bottom:1px solid var(--border)}
+.row:last-child{border:none}.row .l{color:var(--text2)}.row .v{font-weight:500}
+.status-bar{display:flex;gap:12px;align-items:center;background:var(--bg2);padding:10px 16px;border-radius:var(--radius);margin-bottom:16px;flex-wrap:wrap;font-size:13px}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px}
+.dot.g{background:var(--green)}.dot.r{background:var(--red)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px}
+.form-group{margin-bottom:10px}
+.form-group label{display:block;margin-bottom:3px;font-size:12px;color:var(--text2)}
+pre, .log-box{background:var(--bg2);padding:12px;border-radius:6px;font-size:12px;overflow:auto;max-height:500px;border:1px solid var(--border)}
+.tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.tab{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:8px 16px;cursor:pointer;font-size:13px;color:var(--text2)}
+.tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.toast{position:fixed;top:16px;right:16px;padding:10px 16px;border-radius:6px;z-index:9999;display:none;font-size:14px;animation:fadeIn .3s}
+.toast.ok{background:var(--green);color:#fff}.toast.err{background:var(--red);color:#fff}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+
+.rec-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:12px 0}
+.rec-card{background:rgba(15,17,23,.55);border:1px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;transition:.18s}
+.rec-card:hover{border-color:rgba(79,140,255,.65);transform:translateY(-1px)}
+.rec-card.selected{border-color:var(--accent);box-shadow:0 0 0 1px rgba(79,140,255,.35);background:rgba(79,140,255,.10)}
+.rec-card h4{font-size:14px;margin-bottom:8px}.rec-card p{font-size:12px;color:var(--text2);line-height:1.55;margin:8px 0}.risk-tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.12);color:#dbeafe;background:rgba(79,140,255,.16)}
+.precheck-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:10px}.precheck-item{background:rgba(15,17,23,.55);border:1px solid var(--border);border-radius:10px;padding:10px}.precheck-item .k{color:var(--text2);font-size:11px}.precheck-item .v{font-size:14px;font-weight:700;margin-top:4px}
+.confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.62);display:none;align-items:center;justify-content:center;z-index:9998;padding:20px}.confirm-box{width:min(520px,100%);background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;box-shadow:0 24px 80px rgba(0,0,0,.45)}.confirm-box h3{margin-bottom:10px}.confirm-box p{color:var(--text2);font-size:13px;line-height:1.7}.confirm-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap}
+.mobile-admin-nav{display:none}
+.observe-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.observe-head h2{font-size:20px}.observe-head .meta{color:var(--text2);font-size:12px;margin-top:4px}
+.observe-section{margin-bottom:22px}.observe-section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}.observe-section-title h3{font-size:15px}.observe-section-title span{font-size:12px;color:var(--text2)}
+.observe-badge{display:inline-block;padding:2px 7px;border:1px solid var(--border);border-radius:4px;font-size:11px;white-space:nowrap}.observe-badge.fresh{color:var(--green);border-color:rgba(52,211,153,.35);background:rgba(52,211,153,.1)}.observe-badge.closed{color:#fbbf24;border-color:rgba(251,191,36,.35);background:rgba(251,191,36,.1)}.observe-badge.stale,.observe-badge.missing{color:var(--red);border-color:rgba(248,113,113,.35);background:rgba(248,113,113,.1)}.observe-badge.monitor{color:#9bbcff;border-color:rgba(79,140,255,.35);background:rgba(79,140,255,.1)}
+.observe-table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius)}.observe-table{width:100%;min-width:680px;border-collapse:collapse;font-size:12px}.observe-table th,.observe-table td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--border);vertical-align:top}.observe-table th{color:var(--text2);font-weight:500;background:var(--bg2)}.observe-table tr:last-child td{border-bottom:0}.observe-table td{overflow-wrap:anywhere}
+@media(max-width:700px){#app>.sidebar{display:none!important}#app>.main{margin-left:0!important;width:100%;padding:14px}.mobile-admin-nav{display:flex;gap:6px;overflow-x:auto;margin:-2px 0 14px;padding-bottom:4px}.mobile-tab{flex:0 0 auto;background:var(--bg2);border:1px solid var(--border);color:var(--text2);padding:7px 10px}.mobile-tab.active{background:var(--accent);border-color:var(--accent);color:#fff}.observe-head{align-items:flex-start}.observe-head h2{font-size:18px}.strat-grid{grid-template-columns:1fr}.observe-section-title{align-items:flex-start}.row{gap:12px}.row .v{text-align:right;overflow-wrap:anywhere}}
+
+</style>
+</head>
+<body>
+<div id="toast" class="toast"></div>
+<div id="login" class="login-page">
+  <div class="auth-shell">
+    <section class="hero-panel">
+      <div class="hero-kicker">⚡ 面向实盘的 OKX 自动化策略平台</div>
+      <h1>让客户自己接入 API，选择币种，<span>安全启动量化策略</span></h1>
+      <p>从注册、API Key 接入、策略创建到运行监控，统一在一个面板完成。系统内置风控、收益日报、运行健康检查和多币种管理，适合逐步从自用系统升级为客户服务平台。</p>
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="setAuthTab('register')">免费创建账户</button>
+        <button class="ghost-btn" onclick="setAuthTab('login')">已有账户登录</button>
+      </div>
+      <div class="feature-grid">
+        <div class="feature-card"><b>API Key 加密接入</b><span>客户自助添加 OKX API，建议只开放交易和读取权限，禁止提币。</span></div>
+        <div class="feature-card"><b>自选币种策略</b><span>系统会在创建和启动前检查合约规格、账户余额和最小下单要求。</span></div>
+        <div class="feature-card"><b>风控和日报</b><span>跟踪净值、手续费、保证金、回撤和策略运行状态。</span></div>
+      </div>
+      <div class="hero-metrics">
+        <div class="hero-metric"><div class="n">24/7</div><div class="t">策略守护</div></div>
+        <div class="hero-metric"><div class="n">多币种</div><div class="t">组合管理</div></div>
+        <div class="hero-metric"><div class="n">邮件</div><div class="t">收益日报</div></div>
+      </div>
+    </section>
+    <section class="login-box">
+      <div class="brand-mark"><div class="brand-icon">⚡</div><div><div class="brand-title">OKX Quant</div><div class="brand-sub">客户量化策略控制台</div></div></div>
+      <div class="auth-tabs"><button id="tab-login" class="auth-tab active" onclick="setAuthTab('login')">登录</button><button id="tab-register" class="auth-tab" onclick="setAuthTab('register')">注册</button></div>
+      <div id="register-success" class="auth-note" style="display:none;color:var(--green);border-color:rgba(52,211,153,.35);background:rgba(52,211,153,.08)"></div>
+      <div id="form-login" class="auth-form active">
+        <div class="form-group"><label>邮箱</label><input type="email" id="luser" placeholder="请输入邮箱" autocomplete="email"></div>
+        <div class="form-group"><label>密码</label><input type="password" id="lpass" placeholder="请输入密码" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+        <button class="btn-primary primary-wide" onclick="doLogin()">登录控制台</button>
+        <div class="switch-line">还没有账户？<a onclick="setAuthTab('register')">立即注册</a></div>
+      </div>
+      <div id="form-register" class="auth-form">
+        <div class="form-group"><label>邮箱</label><input type="email" id="remail" placeholder="用于登录和接收通知" autocomplete="email"></div>
+        <div class="form-group"><label>密码</label><input type="password" id="rpass" placeholder="建议至少 8 位，包含数字和字母" autocomplete="new-password"></div>
+        <div class="form-group"><label>确认密码</label><input type="password" id="rpass2" placeholder="再次输入密码" autocomplete="new-password" onkeydown="if(event.key==='Enter')doRegister()"></div>
+        <button class="btn-primary primary-wide" onclick="doRegister()">创建账户</button>
+        <div class="auth-note">注册后请先添加 OKX API Key。为了资金安全，请在 OKX 后台关闭提币权限，并尽量绑定服务器 IP。</div>
+        <div class="risk-list"><div>平台不会要求提币权限</div><div>策略运行前建议先小资金验证</div><div>启动前自动执行币种与余额预检</div></div>
+        <div class="switch-line">已有账户？<a onclick="setAuthTab('login')">返回登录</a></div>
+      </div>
+    </section>
+  </div>
+</div>
+<div id="app" class="app">
+  <div id="customer-main" class="customer-main">
+    <div class="customer-shell">
+      <div class="customer-topbar"><div><div class="customer-title">我的量化</div><div id="customer-greeting" class="customer-subtitle">策略运行情况一览</div></div><div style="display:flex;gap:8px"><button class="ghost-btn btn-sm" onclick="customerRefresh()">刷新</button><button class="ghost-btn btn-sm" onclick="logout()">退出登录</button></div></div>
+      <div id="customer-balance" class="customer-balance"></div>
+      <div class="customer-tabs"><button class="customer-tab active" onclick="customerShow('home',this)">首页</button><button class="customer-tab" onclick="customerShow('income',this)">收益</button><button class="customer-tab" onclick="customerShow('quant',this)">量化</button><button class="customer-tab" onclick="customerShow('mine',this)">我的</button></div>
+      <section id="customer-home" class="customer-page"></section>
+      <section id="customer-income" class="customer-page" style="display:none"></section>
+      <section id="customer-quant" class="customer-page" style="display:none"></section>
+      <section id="customer-mine" class="customer-page" style="display:none"></section>
+    </div>
+  </div>
+  <div class="sidebar">
+    <div class="logo">&#9889; <span>Quant</span></div>
+    <div class="nav-item active admin-only" onclick="showPage('dash')">&#128202; 仪表盘</div>
+    <div class="nav-item admin-only" onclick="showPage('strat')">&#9881; 策略</div>
+    <div class="nav-item admin-only" onclick="openMultiApp()">&#127760; 多币种</div>
+    <div class="nav-item admin-only" onclick="showPage('observe')">&#128225; 市场观察</div>
+    <div class="nav-item admin-only" onclick="showPage('cfg')">&#128295; 配置</div>
+    <div class="nav-item admin-only" onclick="showPage('logs')">&#128196; 日志</div>
+    <div class="nav-item" onclick="showPage('keys')">&#128273; API密钥</div>
+    <div class="nav-item admin-only" onclick="showPage('admin')">&#128101; 用户管理</div>
+    <div style="height:40px"></div>
+    <div class="nav-item" onclick="logout()" style="border-left-color:transparent">&#128682; 退出</div>
+  </div>
+  <div class="main">
+    <div class="mobile-admin-nav admin-only"><button class="mobile-tab active" data-page="dash" onclick="showPage('dash')">仪表盘</button><button class="mobile-tab" data-page="observe" onclick="showPage('observe')">市场观察</button><button class="mobile-tab" data-page="strat" onclick="showPage('strat')">策略</button><button class="mobile-tab" data-page="cfg" onclick="showPage('cfg')">配置</button><button class="mobile-tab" data-page="logs" onclick="showPage('logs')">日志</button></div>
+    <div id="page-dash" class="page active"><div id="statusBar" class="status-bar"></div><div id="orders-content" class="stat-grid"></div><div id="dash-content">加载中...</div></div>
+    <div id="page-strat" class="page"><div id="strat-content">加载中...</div></div>
+    <div id="page-observe" class="page"><div id="observe-content">加载中...</div></div>
+    <div id="page-cfg" class="page"><div id="cfg-content">加载中...</div></div>
+    <div id="page-logs" class="page"><div id="logs-content">加载中...</div></div>
+    <div id="page-keys" class="page"><div id="keys-content">加载中...</div></div>
+    <div id="page-admin" class="page"><div id="admin-content">加载中...</div></div>
+  </div>
+</div>
+
+<div id="start-confirm" class="confirm-overlay">
+  <div class="confirm-box">
+    <h3>启动前确认</h3>
+    <p id="start-confirm-text"></p>
+    <div class="confirm-actions">
+      <button class="ghost-btn" onclick="hideStartConfirm()">取消</button>
+      <button class="btn-primary" onclick="confirmCreateUserStrategy()">确认创建并启动实盘策略</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var TOKEN = localStorage.getItem("tk") || "";
+var REF = null;
+var CURRENT_USER = null;
+var SELECTED_STRATEGY_SYMBOL = "";
+
+function fmtNum(v, d) {
+  var n = Number(v || 0);
+  return isFinite(n) ? n.toFixed(d == null ? 2 : d) : "-";
+}
+
+function fmtUsd(v, d) {
+  return "$" + fmtNum(v, d == null ? 2 : d);
+}
+
+function fmtPct(v, d) {
+  return fmtNum(v, d == null ? 2 : d) + "%";
+}
+
+function fmtTs(sec) {
+  if (!sec) return "-";
+  return new Date(sec * 1000).toLocaleString();
+}
+
+function sideLabel(side) {
+  if (side === "long") return "多头偏向";
+  if (side === "short") return "空头偏向";
+  return "均衡";
+}
+
+function reasonLabel(reason) {
+  var map = {
+    "normal": "正常",
+    "startup_recovery": "启动恢复",
+    "post_recovery_refill_delay": "恢复后等待",
+    "imbalance_clamp": "失衡限流",
+    "margin_clamp": "保证金限流",
+    "balance_cap": "余额限流",
+    "bias_lock_long": "多侧锁定",
+    "bias_lock_short": "空侧锁定",
+    "global_cooldown": "全局冷却",
+    "side_cooldown": "方向冷却",
+    "same_candle": "同K线去重",
+    "wick_block": "插针过滤",
+    "await_trigger": "等待触发",
+    "long_max_layers": "多侧层数上限",
+    "short_max_layers": "空侧层数上限",
+    "position_limit": "仓位上限",
+    "margin_limit": "保证金上限",
+    "market_order_failed": "市价单失败",
+    "ready": "可执行",
+    "cooldown": "冷却中",
+    "imbalance_below_trigger": "失衡未达阈值",
+    "edge_below_target": "利润边不足",
+    "no_dominant_side": "无主导方向",
+    "no_position": "无可归一化仓位",
+    "no_price": "价格未就绪",
+    "halted": "已停机",
+    "no_client": "交易客户端未就绪",
+    "not_needed": "当前无需执行"
+  };
+  if (!reason) return "无";
+  if (reason.indexOf(",") >= 0) {
+    return reason.split(",").map(function(part){ return map[part] || part; }).join(" / ");
+  }
+  return map[reason] || reason;
+}
+
+function eventLabel(kind) {
+  var map = {
+    "add": "加仓",
+    "add_skip": "跳过加仓",
+    "rebalance": "归一化",
+    "grid_rebuild": "网格重建",
+    "grid_refill": "网格补挂",
+    "sync": "接管持仓"
+  };
+  return map[kind] || (kind || "无");
+}
+
+function monitorPhase(m) {
+  if (!m) return "未知";
+  if (m.halted) return "已停机";
+  if (m.startup_recovery_active) return "启动恢复中";
+  if (m.post_recovery_refill_delay_active) return "恢复后回补等待";
+  if (m.recovery_mode) return "会话恢复期";
+  return "正常运行";
+}
+
+function monitorReason(m, risk) {
+  if (!m) return "-";
+  if (m.halted) return m.halt_reason || "halted";
+  if (risk && risk.daily_stop_active) return risk.daily_stop_reason || "daily_stop";
+  if (m.startup_recovery_active) return "剩余 " + fmtNum(m.startup_recovery_remaining_sec, 0) + " 秒";
+  if (m.post_recovery_refill_delay_active) return "等待单边仓位冷却";
+  if (m.recovery_mode) return "会话恢复剩余 " + fmtNum(m.recovery_remaining_sec, 0) + " 秒";
+  if (!m.grid_long_enabled && m.grid_long_block_reason) return "多侧关闭: " + reasonLabel(m.grid_long_block_reason);
+  if (!m.grid_short_enabled && m.grid_short_block_reason) return "空侧关闭: " + reasonLabel(m.grid_short_block_reason);
+  return reasonLabel(m.grid_layer_limit_reason);
+}
+
+function gridPolicySummary(m) {
+  var parts = [];
+  if (!m.grid_long_enabled && m.grid_long_block_reason) parts.push("多侧 " + reasonLabel(m.grid_long_block_reason));
+  if (!m.grid_short_enabled && m.grid_short_block_reason) parts.push("空侧 " + reasonLabel(m.grid_short_block_reason));
+  if (m.grid_layer_limit_reason) parts.push("层数 " + reasonLabel(m.grid_layer_limit_reason));
+  return parts.join(" / ") || "正常";
+}
+
+function inventoryRepairSummary(m) {
+  if (!m) return "-";
+  if (m.inventory_repair_ready) {
+    return "待修复 " + sideLabel(m.inventory_repair_side) + " / 净敞口 " + fmtNum(m.inventory_repair_net_notional, 2);
+  }
+  if (m.inventory_repair_reason === "repair_pending") return "已触发，等待修复窗口";
+  if (m.inventory_repair_reason === "balanced") return "库存平衡";
+  if (m.inventory_repair_reason === "no_price") return "等待价格";
+  return reasonLabel(m.inventory_repair_reason || "not_needed");
+}
+
+function lastEventSummary(m) {
+  if (!m || !m.last_event_type) return "无";
+  var parts = [eventLabel(m.last_event_type)];
+  if (m.last_event_side) parts.push(sideLabel(m.last_event_side));
+  if (m.last_event_reason) parts.push(reasonLabel(m.last_event_reason));
+  if (m.last_event_qty) parts.push(fmtNum(m.last_event_qty, 0) + " 张");
+  if (m.last_event_price) parts.push("@ " + fmtNum(m.last_event_price, 4));
+  if (m.last_event_detail) parts.push(m.last_event_detail);
+  return parts.join(" / ");
+}
+
+function addWatchSummary(m) {
+  if (!m) return "-";
+  if (m.global_add_block_reason === "global_cooldown") {
+    return "总冷却 " + fmtNum(m.global_add_cooldown_sec, 0) + " 秒";
+  }
+  var longText = "多 " + fmtNum(m.long_add_trigger_price, 4) + " (" + fmtPct(m.long_add_gap_pct, 2) + ")";
+  var shortText = "空 " + fmtNum(m.short_add_trigger_price, 4) + " (" + fmtPct(m.short_add_gap_pct, 2) + ")";
+  if (m.long_add_block_reason && m.long_add_block_reason !== "await_trigger") {
+    longText += " " + reasonLabel(m.long_add_block_reason);
+    if (m.long_add_cooldown_sec > 0) longText += " " + fmtNum(m.long_add_cooldown_sec, 0) + "s";
+  }
+  if (m.short_add_block_reason && m.short_add_block_reason !== "await_trigger") {
+    shortText += " " + reasonLabel(m.short_add_block_reason);
+    if (m.short_add_cooldown_sec > 0) shortText += " " + fmtNum(m.short_add_cooldown_sec, 0) + "s";
+  }
+  return longText + " / " + shortText;
+}
+
+function fillSyncSummary(sync) {
+  if (!sync) return "无同步信息";
+  var ts = sync.last_sync_ts_ms ? new Date(sync.last_sync_ts_ms).toLocaleString() : "-";
+  return "最近同步 " + ts + " / 重复 " + fmtNum(sync.duplicates, 0) + " / 失败 " + fmtNum(sync.failures, 0);
+}
+
+function buildMonitorPanel(m, risk) {
+  if (!m) return "";
+  var frozen = Number(m.cached_frozen || 0);
+  var avail = Number(m.cached_avail || 0);
+  var phase = monitorPhase(m);
+  var reason = monitorReason(m, risk);
+  var haltText = (m.halted || (risk && risk.hard_stop_active)) ? "保护中" : "正常";
+  var haltColor = (m.halted || (risk && risk.hard_stop_active)) ? "var(--red)" : "var(--green)";
+  var gridState = (m.grid_long_enabled ? "多开" : "多关") + " / " + (m.grid_short_enabled ? "空开" : "空关");
+  var gridPolicy = gridPolicySummary(m);
+  var inventoryRepair = inventoryRepairSummary(m);
+  var lastEvent = lastEventSummary(m);
+  var addWatch = addWatchSummary(m);
+  return "<h3 style='margin:4px 0 12px;font-size:16px'>&#128269; 测试观察</h3>" +
+    "<div class=strat-grid>" +
+      "<div class=strat-card><div class=hdr><h3>交易状态</h3><span style='font-size:12px;color:var(--text2)'>" + phase + "</span></div><div class=body>" +
+        "<div class=row><span class=l>当前价格</span><span class=v>" + fmtNum(m.price, 4) + "</span></div>" +
+        "<div class=row><span class=l>净偏向</span><span class=v>" + sideLabel(m.dominant_side) + " / " + fmtPct(m.imbalance_pct, 1) + "</span></div>" +
+        "<div class=row><span class=l>净敞口</span><span class=v>" + fmtNum(m.net_exposure_units, 0) + " 张 / " + fmtUsd(m.net_exposure_usdt, 2) + "</span></div>" +
+        "<div class=row><span class=l>持仓数量</span><span class=v>L " + fmtNum(m.long_qty, 0) + " / S " + fmtNum(m.short_qty, 0) + "</span></div>" +
+        "<div class=row><span class=l>加仓层数</span><span class=v>L " + fmtNum(m.long_adds, 0) + " / S " + fmtNum(m.short_adds, 0) + "</span></div>" +
+        "<div class=row><span class=l>网格许可</span><span class=v>" + gridState + "</span></div>" +
+        "<div class=row><span class=l>目标网格层</span><span class=v>" + fmtNum(m.target_grid_layers, 0) + " / " + gridPolicy + "</span></div>" +
+        "<div class=row><span class=l>挂单估算</span><span class=v>" + fmtNum(m.pending_order_estimate, 0) + " (L" + fmtNum(m.grid_long_count, 0) + " / S" + fmtNum(m.grid_short_count, 0) + " / TP" + fmtNum(m.tp_order_count, 0) + ")</span></div>" +
+        "<div class=row><span class=l>加仓观察</span><span class=v>" + addWatch + "</span></div>" +
+        "<div class=row><span class=l>库存修复</span><span class=v>" + inventoryRepair + "</span></div>" +
+        "<div class=row><span class=l>最近动作</span><span class=v>" + lastEvent + "</span></div>" +
+        "<div class=row><span class=l>观察备注</span><span class=v>" + reason + "</span></div>" +
+      "</div></div>" +
+      "<div class=strat-card><div class=hdr><h3>资金与风控</h3><span style='font-size:12px;color:" + haltColor + "'>" + haltText + "</span></div><div class=body>" +
+        "<div class=row><span class=l>账户权益</span><span class=v>" + fmtUsd(m.cached_equity, 2) + "</span></div>" +
+        "<div class=row><span class=l>可用余额</span><span class=v>" + fmtUsd(avail, 2) + "</span></div>" +
+        "<div class=row><span class=l>冻结保证金</span><span class=v>" + fmtUsd(frozen, 2) + "</span></div>" +
+        "<div class=row><span class=l>保证金占用</span><span class=v>" + fmtPct(m.margin_load_pct, 2) + "</span></div>" +
+        "<div class=row><span class=l>强平距离</span><span class=v style='color:" + (m.liquidation_emergency ? "var(--red)" : (m.liquidation_warning || m.liq_px_unavailable ? "#fbbf24" : "var(--green)")) + "'>" + (m.liq_px_unavailable ? "不可用" : (m.liquidation_emergency ? "紧急" : (m.liquidation_warning ? "预警" : (m.liquidation_distance_safe ? "安全" : "未检查")))) + (m.liquidation_min_distance_rate == null ? "" : " / " + fmtNum(Number(m.liquidation_min_distance_rate) * 100, 1) + "%") + "</span></div>" +
+        "<div class=row><span class=l>强平保护暂停</span><span class=v>" + (m.liquidation_opening_pause_remaining_sec > 0 ? fmtNum(m.liquidation_opening_pause_remaining_sec, 1) + " 秒" : "未暂停") + "</span></div>" +
+        "<div class=row><span class=l>会话盈亏</span><span class=v style='color:" + (Number(m.session_pnl || 0) < 0 ? "var(--red)" : "var(--green)") + "'>" + fmtUsd(m.session_pnl, 2) + "</span></div>" +
+        "<div class=row><span class=l>当日盈亏</span><span class=v style='color:" + (Number(m.daily_pnl || 0) < 0 ? "var(--red)" : "var(--green)") + "'>" + fmtUsd(m.daily_pnl, 2) + "</span></div>" +
+        "<div class=row><span class=l>累计已实现</span><span class=v style='color:" + (Number(m.realized_pnl || 0) < 0 ? "var(--red)" : "var(--green)") + "'>" + fmtUsd(m.realized_pnl, 2) + "</span></div>" +
+        "<div class=row><span class=l>手续费负担</span><span class=v>" + fmtUsd(m.total_fees, 4) + " / " + fmtPct(m.fee_load_pct, 2) + "</span></div>" +
+        "<div class=row><span class=l>成交同步</span><span class=v>" + fillSyncSummary(m.fill_sync || window.__fillSync || null) + "</span></div>" +
+        "<div class=row><span class=l>动作时间</span><span class=v style='font-size:12px'>" + fmtTs(m.last_event_at || 0) + "</span></div>" +
+        "<div class=row><span class=l>更新时间</span><span class=v style='font-size:12px'>" + fmtTs(m.updated_at) + "</span></div>" +
+      "</div></div>" +
+    "</div>";
+}
+
+function buildLoopClosurePanel(items, audit, history) {
+  items = items || [];
+  audit = audit || {};
+  history = history || [];
+  var rows = items.map(function(s){
+    var active = s.running && !s.halted;
+    var marginColor = Number(s.margin_load_pct || 0) > 100 ? "var(--red)" : "var(--green)";
+    var blocks = [];
+    if (s.long_block) blocks.push("L:" + s.long_block);
+    if (s.short_block) blocks.push("S:" + s.short_block);
+    if (s.grid_limit) blocks.push("grid:" + s.grid_limit);
+    if (Number(s.opening_guard_total || 0) > 0) blocks.push("开仓拦截15m:" + fmtNum(s.opening_guard_total, 0) + (s.opening_guard_top_reason ? " / " + s.opening_guard_top_reason : ""));
+    return "<tr><td>" + (s.symbol || s.runtime || "-") + "</td>" +
+      "<td style='color:" + (active ? "var(--green)" : "var(--red)") + "'>" + (active ? "运行" : "异常/停止") + "</td>" +
+      "<td>" + sideLabel(s.dominant_side) + "</td>" +
+      "<td align=right style='color:" + marginColor + "'>" + fmtPct(s.margin_load_pct, 1) + "</td>" +
+      "<td align=right>" + fmtNum(s.tp_order_count, 0) + "/" + fmtNum(s.tp_max, 0) + "</td>" +
+      "<td align=right>" + fmtNum(s.grid_count, 0) + "</td>" +
+      "<td>" + ((blocks.join(" | ")) || inventoryRepairSummary(s)) + "</td>" +
+      "<td>" + ((s.last_event_type || "-") + (s.last_event_reason ? " / " + s.last_event_reason : "")) + "</td></tr>";
+  }).join("");
+  if (!rows) rows = "<tr><td colspan=8 style='padding:12px 0;color:var(--text2);text-align:center'>暂无策略闭环数据</td></tr>";
+  var decisions = (audit.decisions || []).map(function(d){
+    return "<div class=row><span class=l>" + (d.symbol || "-") + "</span><span class=v>" + (d.action || "-") + " · score " + fmtNum(d.score, 2) + " · " + ((d.reasons || []).join(",") || "-") + "</span></div>";
+  }).join("");
+  if (!decisions) decisions = "<div style='color:var(--text2);font-size:13px'>暂无预算审计</div>";
+  var latest = history[0] || null;
+  var versionText = latest ? (new Date((latest.ts || 0) * 1000).toLocaleString() + " · " + (latest.scope || "-") + " · " + (latest.change_count || 0) + " 项") : "暂无参数版本";
+  return "<div class=card><h3 style='margin-bottom:12px;font-size:16px'>&#128260; 策略闭环</h3>" +
+    "<div class=strat-grid>" +
+      "<div class=strat-card><div class=hdr><h3>多币种运行反馈</h3><span style='font-size:12px;color:var(--text2)'>" + items.length + " 个运行档</span></div><div class=body><div style='overflow:auto'><table style='width:100%;border-collapse:collapse;font-size:12px'><tr style='color:var(--text2)'><th align=left>交易对</th><th align=left>状态</th><th align=left>偏向</th><th align=right>保证金</th><th align=right>TP</th><th align=right>Grid</th><th align=left>阻塞/原因</th><th align=left>最近动作</th></tr>" + rows + "</table></div></div></div>" +
+      "<div class=strat-card><div class=hdr><h3>预算与参数版本</h3><span style='font-size:12px;color:var(--text2)'>" + (audit.path || "dry-run") + "</span></div><div class=body>" +
+        decisions +
+        "<div class=row><span class=l>最近参数版本</span><span class=v>" + versionText + "</span></div>" +
+      "</div></div>" +
+    "</div></div>";
+}
+
+function buildExecutionPanel(metrics) {
+  if (!metrics || !metrics.available) {
+    return "<div class=card><h3 style='margin-bottom:12px;font-size:16px'>&#128202; 执行质量</h3><div style='color:var(--text2);font-size:13px'>暂无平仓成交统计</div></div>";
+  }
+  var bySide = metrics.by_side || {};
+  var sideBits = Object.keys(bySide).map(function(side){
+    var item = bySide[side] || {};
+    return side + " " + (item.count || 0) + "笔 / $" + fmtNum(item.net || 0, 2) + " / " + fmtPct(item.win_rate || 0, 1);
+  }).join(" | ");
+  var recentRows = (metrics.recent || []).map(function(item){
+    return "<tr><td>" + (item.time || "-") + "</td><td>" + (item.side || "-") + "</td><td align=right>" + fmtNum(item.qty, 0) + "</td><td align=right>$" + fmtNum(item.net, 4) + "</td><td align=right>$" + fmtNum(item.fee, 4) + "</td></tr>";
+  }).join("");
+  return "<div class=card><h3 style='margin-bottom:12px;font-size:16px'>&#128202; 执行质量</h3>" +
+    "<div class=stat-grid style='margin-bottom:12px'>" +
+      "<div class=stat-card><div class=lbl>平仓笔数</div><div class=val>" + (metrics.total_closed_trades || 0) + "</div></div>" +
+      "<div class=stat-card><div class=lbl>净收益/笔</div><div class='val " + ((metrics.avg_net || 0) < 0 ? "red" : "green") + "'>$" + fmtNum(metrics.avg_net, 4) + "</div></div>" +
+      "<div class=stat-card><div class=lbl>利润因子</div><div class=val>" + fmtNum(metrics.profit_factor, 2) + "</div></div>" +
+      "<div class=stat-card><div class=lbl>24h 收益</div><div class='val " + ((metrics.recent_24h_net || 0) < 0 ? "red" : "green") + "'>$" + fmtNum(metrics.recent_24h_net, 4) + "</div></div>" +
+    "</div>" +
+    "<div class=strat-grid>" +
+      "<div class=strat-card><div class=hdr><h3>收益结构</h3></div><div class=body>" +
+        "<div class=row><span class=l>胜率</span><span class=v>" + fmtPct(metrics.win_rate, 2) + "</span></div>" +
+        "<div class=row><span class=l>总毛收益</span><span class=v>$" + fmtNum(metrics.gross_pnl, 4) + "</span></div>" +
+        "<div class=row><span class=l>总手续费</span><span class=v>$" + fmtNum(metrics.total_fees, 4) + "</span></div>" +
+        "<div class=row><span class=l>手续费占毛收益</span><span class=v>" + fmtPct(metrics.fee_ratio_pct, 2) + "</span></div>" +
+        "<div class=row><span class=l>最佳/最差</span><span class=v>$" + fmtNum(metrics.best_trade, 4) + " / $" + fmtNum(metrics.worst_trade, 4) + "</span></div>" +
+        "<div class=row><span class=l>方向分布</span><span class=v>" + (sideBits || "-") + "</span></div>" +
+      "</div></div>" +
+      "<div class=strat-card><div class=hdr><h3>最近平仓</h3></div><div class=body>" +
+        "<div style='overflow:auto'><table style='width:100%;border-collapse:collapse;font-size:12px'><tr style='color:var(--text2)'><th align=left>时间</th><th align=left>方向</th><th align=right>数量</th><th align=right>净值</th><th align=right>手续费</th></tr>" + recentRows + "</table></div>" +
+      "</div></div>" +
+    "</div></div>";
+}
+
+function buildStrategyDataPanel(strategy) {
+  strategy = strategy || {};
+  var curve = strategy.equity_curve || [];
+  var trades = strategy.recent_trades || [];
+  var points = curve.slice(-80);
+  var svg = "<div style='height:110px;display:flex;align-items:center;justify-content:center;color:var(--text2);font-size:13px'>暂无权益曲线</div>";
+  if (points.length > 1) {
+    var minEq = Math.min.apply(null, points.map(function(p){ return Number(p.equity || 0); }));
+    var maxEq = Math.max.apply(null, points.map(function(p){ return Number(p.equity || 0); }));
+    var span = maxEq - minEq || 1;
+    var path = points.map(function(p, i){
+      var x = points.length === 1 ? 0 : (i * 300 / (points.length - 1));
+      var y = 90 - ((Number(p.equity || 0) - minEq) * 80 / span);
+      return x.toFixed(1) + "," + y.toFixed(1);
+    }).join(" ");
+    var last = points[points.length - 1] || {};
+    var color = Number(last.equity || 0) >= Number(points[0].equity || 0) ? "var(--green)" : "var(--red)";
+    svg = "<svg viewBox='0 0 300 100' style='width:100%;height:110px;display:block'><polyline points='" + path + "' fill='none' stroke='" + color + "' stroke-width='2'/></svg>";
+  }
+  var rows = trades.map(function(t){
+    var ts = Number(t.ts || 0);
+    if (ts > 9999999999) ts = Math.floor(ts / 1000);
+    return "<tr><td>" + (ts ? new Date(ts * 1000).toLocaleString() : "-") + "</td><td>" + (t.symbol || "-") + "</td><td>" + (t.side || "-") + "</td><td align=right>" + fmtNum(t.quantity, 4) + "</td><td align=right>$" + fmtNum(t.pnl, 4) + "</td><td align=right>$" + fmtNum(t.fee, 4) + "</td></tr>";
+  }).join("");
+  if (!rows) rows = "<tr><td colspan=6 style='padding:12px 0;color:var(--text2);text-align:center'>暂无最近交易</td></tr>";
+  return "<div class=card><h3 style='margin-bottom:12px;font-size:16px'>&#128200; SQLite 交易数据</h3><div class=strat-grid>" +
+    "<div class=strat-card><div class=hdr><h3>权益曲线</h3><span style='font-size:12px;color:var(--text2)'>" + curve.length + " 点</span></div><div class=body>" + svg + "</div></div>" +
+    "<div class=strat-card><div class=hdr><h3>最近交易</h3><span style='font-size:12px;color:var(--text2)'>" + trades.length + " 笔</span></div><div class=body><div style='overflow:auto'><table style='width:100%;border-collapse:collapse;font-size:12px'><tr style='color:var(--text2)'><th align=left>时间</th><th align=left>品种</th><th align=left>方向</th><th align=right>数量</th><th align=right>PnL</th><th align=right>手续费</th></tr>" + rows + "</table></div></div></div>" +
+    "</div></div>";
+}
+
+function healthLabel(status) {
+  var map = { ok: "正常", warn: "注意", critical: "异常", missing: "缺失" };
+  return map[status] || (status || "-");
+}
+
+function healthColor(status) {
+  if (status === "critical" || status === "missing") return "var(--red)";
+  if (status === "warn") return "#fbbf24";
+  return "var(--green)";
+}
+
+function buildOpsHealthPanel(health) {
+  if (!health) {
+    return "<div class=card><h3 style='margin-bottom:12px;font-size:16px'>&#129658; 运行健康</h3><div style='color:var(--text2);font-size:13px'>暂无健康检查数据</div></div>";
+  }
+  var files = health.files || [];
+  var rows = files.map(function(item){
+    return "<div class=row><span class=l>" + (item.name || item.path || "-") + "</span><span class=v style='color:" + healthColor(item.status) + "'>" + healthLabel(item.status) + " / " + (item.age_sec == null ? "-" : (fmtNum(item.age_sec, 0) + "s")) + " / " + (item.note || "-") + "</span></div>";
+  }).join("");
+  var halted = (health.halted_strategies || []).join(", ") || "无";
+  var stale = (health.stale_components || []).join(", ") || "无";
+  var logInfo = health.logs || {};
+  return "<div class=card><h3 style='margin-bottom:12px;font-size:16px'>&#129658; 运行健康</h3>" +
+    "<div class=stat-grid style='margin-bottom:12px'>" +
+      "<div class=stat-card><div class=lbl>健康评分</div><div class='val " + ((health.score || 0) < 70 ? "red" : "green") + "'>" + fmtNum(health.score || 0, 0) + "</div></div>" +
+      "<div class=stat-card><div class=lbl>引擎状态</div><div class='val " + (health.engine_running ? "green" : "red") + "'>" + (health.engine_running ? "运行" : "停止") + "</div></div>" +
+      "<div class=stat-card><div class=lbl>告警组件</div><div class='val " + ((health.warning_count || 0) + (health.critical_count || 0) > 0 ? "red" : "green") + "'>" + ((health.warning_count || 0) + (health.critical_count || 0)) + "</div></div>" +
+      "<div class=stat-card><div class=lbl>最近错误</div><div class='val " + ((logInfo.errors || 0) > 0 ? "red" : "green") + "'>" + (logInfo.errors || 0) + "</div></div>" +
+    "</div>" +
+    "<div class=strat-grid>" +
+      "<div class=strat-card><div class=hdr><h3>组件新鲜度</h3><span style='font-size:12px;color:" + healthColor(health.status) + "'>" + healthLabel(health.status) + "</span></div><div class=body>" +
+        rows +
+      "</div></div>" +
+      "<div class=strat-card><div class=hdr><h3>值班摘要</h3></div><div class=body>" +
+        "<div class=row><span class=l>策略实例</span><span class=v>" + (health.strategy_count || 0) + "</span></div>" +
+        "<div class=row><span class=l>停机策略</span><span class=v>" + halted + "</span></div>" +
+        "<div class=row><span class=l>待处理组件</span><span class=v>" + stale + "</span></div>" +
+        "<div class=row><span class=l>最近警告</span><span class=v>" + (logInfo.warnings || 0) + "</span></div>" +
+        "<div class=row><span class=l>快照更新时间</span><span class=v style='font-size:12px'>" + fmtTs(health.snapshot_updated_at || 0) + "</span></div>" +
+      "</div></div>" +
+    "</div></div>";
+}
+
+function buildConfigHistoryPanel(items) {
+  if (!items || !items.length) {
+    return "<div class=card><h3 style='margin-bottom:12px'>参数版本</h3><div style='color:var(--text2);font-size:13px'>还没有参数变更记录</div></div>";
+  }
+  var html = "<div class=card><div style='display:flex;align-items:center;gap:8px;margin-bottom:12px'><h3>参数版本</h3><span style='color:var(--text2);font-size:12px'>最近 " + items.length + " 次</span></div>";
+  for (var i = 0; i < items.length; i++) {
+    var item = items[i] || {};
+    html += "<div class=row><span class=l>" + new Date((item.ts || 0) * 1000).toLocaleString() + " / " + (item.scope || "-") + "</span><span class=v>" + (item.change_count || 0) + " 项: " + ((item.changed_keys || []).join(", ") || "-") + "</span></div>";
+  }
+  html += "</div>";
+  return html;
+}
+
+function toast(msg, ok) {
+  var t = document.getElementById("toast");
+  t.textContent = msg; t.className = "toast " + (ok ? "ok" : "err");
+  t.style.display = "block"; setTimeout(function(){t.style.display="none"}, 2500);
+}
+
+function api(path, opts) {
+  opts = opts || {};
+  var h = {"Content-Type":"application/json"};
+  if (TOKEN) h["Authorization"] = "Bearer " + TOKEN;
+  var url = "/api" + path;
+  return fetch(url, {method: opts.method || "GET", headers: h, body: opts.body || null})
+    .then(function(r){if(r.status==401){logout();return null};return r.json()})
+    .catch(function(){return null});
+}
+
+function setAuthTab(name) {
+  var isRegister = name === "register";
+  var successBox = document.getElementById("register-success");
+  if (successBox && isRegister) { successBox.style.display = "none"; }
+  document.getElementById("tab-login").classList.toggle("active", !isRegister);
+  document.getElementById("tab-register").classList.toggle("active", isRegister);
+  document.getElementById("form-login").classList.toggle("active", !isRegister);
+  document.getElementById("form-register").classList.toggle("active", isRegister);
+}
+
+function doLogin() {
+  var u = document.getElementById("luser").value.trim();
+  var p = document.getElementById("lpass").value;
+  if (!u || !p) { toast("请输入邮箱和密码", false); return; }
+  api("/auth/login", {method:"POST", body:JSON.stringify({email:u,password:p})})
+    .then(function(r){
+      if (r && r.code === 0) {
+        TOKEN = r.token; localStorage.setItem("tk", TOKEN);
+        document.getElementById("lpass").value = "";
+        afterLogin();
+      } else { toast("登录失败: " + (r ? r.msg : "请求失败"), false); }
+    });
+}
+
+function doRegister() {
+  var email = document.getElementById("remail").value.trim().toLowerCase();
+  var u = email;
+  var p = document.getElementById("rpass").value;
+  var p2 = document.getElementById("rpass2").value;
+  if (!email || email.indexOf("@") < 1) { toast("请输入有效邮箱", false); return; }
+  if (p.length < 8) { toast("密码至少 8 位", false); return; }
+  if (p !== p2) { toast("两次密码不一致", false); return; }
+  fetch("/api/auth/register", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({email:email,password:p})})
+    .then(function(resp){ return resp.json(); })
+    .then(function(r){
+      if (r && r.code === 0) {
+        document.getElementById("luser").value = u;
+        document.getElementById("lpass").value = "";
+        document.getElementById("rpass").value = "";
+        document.getElementById("rpass2").value = "";
+        setAuthTab("login");
+        var successBox = document.getElementById("register-success");
+        if (successBox) {
+          successBox.textContent = "注册成功！请使用邮箱 " + email + " 登录控制台。";
+          successBox.style.display = "block";
+        }
+        toast("注册成功，请登录", true);
+      } else { toast("注册失败: " + (r ? r.msg : "请求失败"), false); }
+    }).catch(function(){ toast("网络错误", false); });
+}
+
+function logout() {
+  var oldToken = TOKEN;
+  TOKEN = ""; CURRENT_USER = null; localStorage.removeItem("tk");
+  document.getElementById("lpass").value = "";
+  document.getElementById("app").style.display = "none"; document.getElementById("login").style.display = "flex";
+  if (REF) clearInterval(REF); REF = null;
+  if (oldToken) fetch("/api/auth/logout", {method:"POST", headers:{"Authorization":"Bearer " + oldToken}}).catch(function(){});
+}
+
+function openMultiApp() {
+  if (!isAdminUser()) { toast("客户账户不能查看全局多币种面板", false); return; }
+  var url = "/api/app";
+  if (TOKEN) url += "#" + encodeURIComponent(TOKEN);
+  window.open(url, "_blank");
+}
+
+function isAdminUser() { return CURRENT_USER && CURRENT_USER.username === "admin"; }
+
+function applyUserMode() {
+  document.querySelectorAll(".admin-only").forEach(function(el){ el.style.display = isAdminUser() ? "" : "none"; });
+  var customer = document.getElementById("customer-main");
+  var main = document.querySelector("#app > .main");
+  var sidebar = document.querySelector("#app > .sidebar");
+  if (!isAdminUser()) {
+    if (customer) customer.style.display = "block";
+    if (main) { main.style.display = "none"; main.style.marginLeft = ""; }
+    if (sidebar) sidebar.style.display = "none";
+    customerInit();
+    customerLoad();
+  } else {
+    if (customer) customer.style.display = "none";
+    if (main) main.style.display = "block";
+    if (sidebar) sidebar.style.display = "block";
+    showPage("dash");
+  }
+}
+
+function afterLogin() {
+  api("/user/info").then(function(r){
+    CURRENT_USER = r && r.code === 0 ? (r.user || {username:r.username}) : null;
+    document.getElementById("login").style.display = "none";
+    document.getElementById("app").style.display = "flex";
+    applyUserMode();
+    startRefresh();
+    toast("登录成功", true);
+  });
+}
+
+function customerMoney(v) { return Number(v || 0).toFixed(2); }
+function customerSymbol(s) { return String(s || "策略").replace(/-USDT-SWAP$/i, ""); }
+function customerStatus(s) { return s && (s.running || s.status === "running") ? "运行中" : (s.status || "未运行"); }
+function customerValue(obj, keys) { for (var i=0;i<keys.length;i++) if (obj && obj[keys[i]] != null) return obj[keys[i]]; return null; }
+
+function customerStrategyCard(s, compact) {
+  var rt = s.metrics_runtime || s.runtime || s.status_data || {};
+  var metrics = s.metrics || {};
+  var research = metrics.research || {};
+  var oos = research.out_of_sample || {};
+  var researchLabels = {no_data:"暂无研究数据",collecting:"正在积累样本",positive_oos:"样本外表现为正",weak_oos:"样本外表现偏弱"};
+  var status = customerStatus(Object.assign({}, s, rt));
+  var running = status === "运行中" || status === "running";
+  var symbol = customerSymbol(s.symbol || rt.symbol);
+  var realized = metrics.data_available ? metrics.realized_pnl : null;
+  var upnl = customerValue(rt, ["unrealized_pnl","unrealized","upnl"]);
+  var margin = customerValue(rt, ["margin_load_pct","margin_pct"]);
+  var skew = customerValue(rt, ["imbalance_pct","skew_pct"]);
+  var longQty = customerValue(rt, ["long_qty"]), shortQty = customerValue(rt, ["short_qty"]);
+  var incomeText = realized == null ? "暂无收益数据" : (Number(realized) >= 0 ? "+" : "") + customerMoney(realized) + " U";
+  var detailId = "customer-detail-" + String(s.id || symbol).replace(/[^a-zA-Z0-9_-]/g, "_");
+  return "<article class='customer-strategy'><div class=head><div><h3>自动对冲合约</h3><div class=symbol>"+symbol+" · 永续 · "+(s.leverage || "系统配置")+"倍</div></div><span class='badge "+(running?"running":"stopped")+"'>"+status+"</span></div>"+
+    "<div class='profit "+(realized != null && Number(realized)<0?"negative":"")+"'>"+incomeText+"</div><div class=profit-label>累计已实现收益</div>"+
+    "<div class=metrics><div class=metric><b>"+(s.base_position_usdt != null ? customerMoney(s.base_position_usdt)+" U" : "系统分配")+"</b><span>投入规模</span></div><div class=metric><b>"+(s.created_ts ? fmtTs(Number(s.created_ts)) : "-")+"</b><span>开始时间</span></div></div>"+
+    "<div class=customer-actions><button class='ghost-btn btn-sm' onclick=\"customerToggle('"+detailId+"',this)\">查看详情</button></div>"+
+    "<div id='"+detailId+"' class=customer-detail><div class=row><span class=l>当前浮盈亏</span><span class=v>"+(upnl == null ? "暂无数据" : customerMoney(upnl)+" U")+"</span></div><div class=row><span class=l>已实现收益</span><span class=v>"+(metrics.data_available ? customerMoney(metrics.realized_pnl)+" U" : "暂无数据")+"</span></div><div class=row><span class=l>手续费</span><span class=v>"+(metrics.data_available ? customerMoney(metrics.total_fees)+" U" : "暂无数据")+"</span></div><div class=row><span class=l>资金费</span><span class=v>"+(metrics.data_available ? customerMoney(metrics.funding_pnl)+" U" : "暂无数据")+"</span></div><div class=row><span class=l>已平仓笔数</span><span class=v>"+(metrics.data_available ? metrics.closed_trades : "暂无数据")+"</span></div><div class=row><span class=l>研究状态</span><span class=v>"+(researchLabels[research.status]||"暂无研究数据")+"</span></div><div class=row><span class=l>样本外交易</span><span class=v>"+(oos.trades == null ? "暂无数据" : oos.trades+" 笔")+"</span></div><div class=row><span class=l>样本外净收益</span><span class=v>"+(oos.net_pnl == null ? "暂无数据" : customerMoney(oos.net_pnl)+" U")+"</span></div><div class=row><span class=l>样本外利润因子</span><span class=v>"+(oos.profit_factor == null ? "暂无数据" : Number(oos.profit_factor).toFixed(2))+"</span></div><div class=row><span class=l>多空仓位</span><span class=v>"+(longQty == null ? "暂无数据" : "多 "+longQty+" / 空 "+shortQty)+"</span></div><div class=row><span class=l>仓位偏重</span><span class=v>"+(skew == null ? "暂无数据" : customerMoney(skew)+"%")+"</span></div><div class=row><span class=l>保证金占用</span><span class=v>"+(margin == null ? "暂无数据" : customerMoney(margin)+"%")+"</span></div><div class=customer-note style='margin-top:10px'>Vibe-Trading 研究层只分析该策略的独立交易记录，不读取其他账户数据，也不参与下单。</div></div></article>";
+}
+
+function customerShow(name, button) {
+  document.querySelectorAll('.customer-page').forEach(function(x){x.style.display='none';});
+  var page=document.getElementById('customer-'+name); if(page) page.style.display='block';
+  document.querySelectorAll('.customer-tab').forEach(function(x){x.classList.remove('active');});
+  if(button) button.classList.add('active');
+  customerRender(name);
+}
+function customerToggle(id, button) { var el=document.getElementById(id); if(!el)return; var open=el.classList.toggle('open'); button.textContent=open?'收起详情':'查看详情'; }
+function customerRefresh() { customerLoad(); }
+
+function customerInit() {
+  window.__customerData={info:{user:CURRENT_USER||{}},strategies:[]};
+  document.getElementById('customer-balance').innerHTML='<div class=eyebrow>当前策略累计已实现收益</div><div class=amount>+0.00 U</div><div class=meta><span>运行策略 0 个</span><span>数据来自当前客户账户</span></div>';
+  ['home','income','quant','mine'].forEach(customerRender);
+}
+
+function customerLoad() {
+  Promise.all([api('/user/info'),api('/user/strategies')]).then(function(res){
+    var info=res[0]&&res[0].code===0?res[0]:{}; var strategies=res[1]&&res[1].code===0?(res[1].strategies||[]):[];
+    return Promise.all(strategies.map(function(s){ return api('/user/strategies/'+encodeURIComponent(s.id)+'/metrics').then(function(m){ s.metrics=m&&m.code===0?m.metrics:null; s.metrics_runtime=m&&m.code===0?m.runtime:null; return s; }); })).then(function(){ return {info:info,strategies:strategies}; });
+  }).then(function(data){
+    window.__customerData=data;
+    var user=data.info.user||data.info; var name=user.email||user.username||'客户';
+    document.getElementById('customer-greeting').textContent=name+' · 策略运行情况一览';
+    var strategies=data.strategies||[]; var total=0; strategies.forEach(function(s){var metrics=s.metrics||{}; total+=Number(metrics.realized_pnl||0);});
+    document.getElementById('customer-balance').innerHTML='<div class=eyebrow>当前策略累计已实现收益</div><div class=amount>'+(total>=0?'+':'')+customerMoney(total)+' U</div><div class=meta><span>运行策略 '+strategies.filter(function(s){return customerStatus(Object.assign({},s,s.runtime||{}))==='运行中';}).length+' 个</span><span>数据来自当前客户账户</span></div>';
+    ['home','income','quant','mine'].forEach(customerRender);
+  }).catch(function(){
+    customerInit();
+    document.getElementById('customer-home').insertAdjacentHTML('afterbegin','<div class=customer-warning style="margin-bottom:12px">客户数据暂时无法加载，请刷新后重试。</div>');
+  });
+}
+function customerRender(name) {
+  var data=window.__customerData||{strategies:[]}, ss=data.strategies||[];
+  var empty='<div><div class=customer-note>还没有运行策略。添加 OKX API 后即可选择系统策略；添加前也可以正常浏览客户页面。</div><button class="btn-primary btn-sm" style="margin-top:12px" onclick="openCustomerKeys()">添加 API Key 并选择策略</button></div>';
+  var cards=ss.length?ss.map(function(s){return customerStrategyCard(s,name==='home');}).join(''):empty;
+  if(name==='home') document.getElementById('customer-home').innerHTML='<div class=customer-card><h3>当前策略</h3><div class=customer-grid>'+cards+'</div></div><div class=customer-card><h3>运行提示</h3><div class=customer-note>策略由系统自动管理参数。你只需要关注投入规模、已实现收益、浮盈亏和运行状态。</div></div>';
+  if(name==='income') document.getElementById('customer-income').innerHTML='<div class=customer-card><h3>收益概览</h3><div class=customer-grid>'+(ss.length?ss.map(function(s){return customerStrategyCard(s,true);}).join(''):empty)+'</div><div class=customer-note style="margin-top:12px">当前页面优先显示真实客户策略数据；手续费、资金费和浮盈亏会随交易所同步更新。</div></div>';
+  if(name==='quant') document.getElementById('customer-quant').innerHTML='<div class=customer-card><h3>量化策略</h3><div class=customer-grid>'+cards+'</div><div class=customer-warning style="margin-top:12px">客户页面不开放杠杆、加仓层数和止盈参数，避免误操作。需要调整时由系统策略档位统一管理。</div></div>';
+  if(name==='mine') { var mineUser=(data.info||{}).user||data.info||{}; var mineLabel=mineUser.email||mineUser.username||'当前客户'; document.getElementById('customer-mine').innerHTML='<div class=customer-card><h3>账户与 API</h3><div class=customer-note>账户：'+mineLabel+'</div><div style="margin-top:12px"><button class="btn-primary btn-sm" onclick="openCustomerKeys()">管理 API Key</button><button class="ghost-btn btn-sm" style="margin-left:8px" onclick="logout()">退出登录</button></div></div>'; }
+}
+
+function openCustomerKeys() {
+  var customer = document.getElementById("customer-main");
+  var main = document.querySelector("#app > .main");
+  if (customer) customer.style.display = "none";
+  if (main) { main.style.display = "block"; main.style.marginLeft = "0"; }
+  showPage("keys");
+}
+
+function returnToCustomer() {
+  var customer = document.getElementById("customer-main");
+  var main = document.querySelector("#app > .main");
+  if (main) { main.style.display = "none"; main.style.marginLeft = ""; }
+  if (customer) customer.style.display = "block";
+  customerShow("mine", document.querySelectorAll(".customer-tab")[3]);
+  customerLoad();
+}
+
+function showPage(name) {
+  if (!isAdminUser() && ["dash", "strat", "observe", "cfg", "logs", "admin"].indexOf(name) >= 0) name = "keys";
+  document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active")});
+  document.querySelectorAll(".nav-item").forEach(function(n){n.classList.remove("active")});
+  document.querySelectorAll(".mobile-tab").forEach(function(n){n.classList.toggle("active", n.getAttribute("data-page") === name)});
+  document.getElementById("page-" + name).classList.add("active");
+  var items = document.querySelectorAll(".nav-item");
+  var label = {dash:"仪表盘",strat:"策略",observe:"市场观察",cfg:"配置",logs:"日志",admin:"用户管理",keys:"密钥"}[name] || "";
+  for (var i = 0; i < items.length; i++) {
+    if (items[i].textContent.indexOf(label) >= 0) {
+      items[i].classList.add("active"); break;
+    }
+  }
+  loadPage(name);
+}
+
+function startRefresh() {
+  if (REF) clearInterval(REF);
+  if (!isAdminUser()) { REF = setInterval(customerLoad, 10000); return; }
+  REF = setInterval(function(){var a=document.querySelector(".page.active");if(!a)return;var id=a.id.replace("page-","");loadPage(id)},5000);
+}
+
+function loadPage(name) { if (name==="dash") { loadAccount(); loadOrders(); }
+  if (name === "dash") loadDash();
+  else if (name === "strat") loadStrat();
+  else if (name === "observe") loadObserve();
+  else if (name === "cfg") loadCfg();
+  else if (name === "logs") loadLogs();
+  else if (name === "keys") loadKeys();
+  else if (name === "admin") loadAdmin();
+}
+
+function loadAll() { if (isAdminUser()) { loadDash(); loadStrat(); loadAccount(); loadOrders(); } else { loadKeys(); } }
+
+function observeText(v) {
+  return String(v == null ? "-" : v).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]});
+}
+
+function observeFreshness(value) {
+  return {fresh:"实时",closed:"休市",stale:"陈旧",missing:"缺失"}[value] || "未知";
+}
+
+function observeAge(sec) {
+  sec = Number(sec || 0);
+  if (sec < 60) return Math.max(0, Math.round(sec)) + " 秒";
+  if (sec < 3600) return Math.round(sec / 60) + " 分钟";
+  if (sec < 86400) return (sec / 3600).toFixed(1) + " 小时";
+  return (sec / 86400).toFixed(1) + " 天";
+}
+
+function observeState(value) {
+  return {calm:"平稳",high_speed_trend:"高速趋势",high_speed_chop:"高速震荡",unknown:"未知"}[value] || value || "未知";
+}
+
+function observeBadge(freshness) {
+  return "<span class='observe-badge "+observeText(freshness)+"'>"+observeFreshness(freshness)+"</span>";
+}
+
+function loadObserve() {
+  var el = document.getElementById("observe-content");
+  if (!el) return;
+  api("/observability/market").then(function(r){
+    if (!r || r.code !== 0) { el.innerHTML = "<div class=card style='color:var(--red)'>市场观察数据加载失败</div>"; return; }
+    var moca = r.moca || [], radars = r.radars || {}, cross = radars.cross_market || {}, dram = radars.dram || {};
+    var mocaCards = moca.map(function(item){
+      var live = !!item.apply_live;
+      return "<div class=strat-card><div class=hdr><h3>"+observeText(item.symbol)+"</h3><span class='observe-badge "+(live?"stale":"monitor")+"'>"+(live?"已影响交易":"仅观察")+"</span></div><div class=body>"+
+        "<div class=row><span class=l>识别状态</span><span class=v>"+observeText(observeState(item.state))+"</span></div>"+
+        "<div class=row><span class=l>置信度</span><span class=v>"+fmtNum(Number(item.confidence||0)*100,0)+"%</span></div>"+
+        "<div class=row><span class=l>数据状态</span><span class=v>"+observeBadge(item.freshness)+"</span></div>"+
+        "<div class=row><span class=l>更新时间</span><span class=v>"+fmtTs(item.updated_at)+" · "+observeAge(item.age_sec)+"前</span></div></div></div>";
+    }).join("") || "<div class=card>暂无 MOCA 数据</div>";
+
+    var crossLatest = cross.latest || {}, themes = crossLatest.themes || [], crossForward = cross.forward || {};
+    var themeSignals = themes.map(function(x){return (x.theme === "btc_equities" ? "BTC→美股" : x.theme === "eth_equities" ? "ETH→美股" : x.theme) + " " + (x.signal || "-");}).join(" / ") || "-";
+    var themeQuality = themes.map(function(x){return x.data_quality || "-";}).join(" / ") || "-";
+    var dramLatest = dram.latest || {}, dramSignal = dramLatest.signal || {}, dramForward = dram.forward || {}, inventory = dram.inventory || {};
+    var radarCards = "<div class=strat-card><div class=hdr><h3>BTC / ETH → 美股</h3>"+observeBadge(cross.freshness)+"</div><div class=body>"+
+      "<div class=row><span class=l>最新信号</span><span class=v>"+observeText(themeSignals)+"</span></div>"+
+      "<div class=row><span class=l>数据质量</span><span class=v>"+observeText(themeQuality)+"</span></div>"+
+      "<div class=row><span class=l>方向信号样本</span><span class=v>"+Number(crossForward.directional_signals||0)+"</span></div>"+
+      "<div class=row><span class=l>更新时间</span><span class=v>"+fmtTs(cross.updated_at)+" · "+observeAge(cross.age_sec)+"前</span></div></div></div>"+
+      "<div class=strat-card><div class=hdr><h3>DRAM 美股 / 韩股</h3>"+observeBadge(dram.freshness)+"</div><div class=body>"+
+      "<div class=row><span class=l>最新信号</span><span class=v>"+observeText(dramSignal.direction||"-")+" · "+fmtNum(dramSignal.confidence||0,0)+"%</span></div>"+
+      "<div class=row><span class=l>偏差</span><span class=v>"+fmtPct(dramSignal.deviation_pct||0,2)+"</span></div>"+
+      "<div class=row><span class=l>方向信号样本</span><span class=v>"+Number(dramForward.directional_signals||0)+"</span></div>"+
+      "<div class=row><span class=l>更新时间</span><span class=v>"+fmtTs(dram.updated_at)+" · "+observeAge(dram.age_sec)+"前</span></div></div></div>";
+
+    var rows = [
+      ["跨市场前瞻", cross.freshness, crossForward.directional_signals, crossForward.aligned_rows_written, cross.updated_at],
+      ["DRAM 加权前瞻", dram.freshness, dramForward.independent_forward_rows || dramForward.forward_rows_written, dramForward.aligned_rows_written, dram.updated_at],
+      ["DRAM 仓位影子", dram.inventory_freshness, inventory.candidate_intents_filled, inventory.snapshots, dram.inventory_updated_at]
+    ].map(function(x){return "<tr><td>"+observeText(x[0])+"</td><td>"+observeBadge(x[1])+"</td><td>"+Number(x[2]||0)+"</td><td>"+Number(x[3]||0)+"</td><td>"+fmtTs(x[4])+"</td></tr>";}).join("");
+
+    el.innerHTML = "<div class=observe-head><div><h2>市场观察</h2><div class=meta>数据生成 "+fmtTs(r.generated_at)+"</div></div><button class='btn-primary btn-sm' onclick='loadObserve()'>&#x21bb; 刷新</button></div>"+
+      "<section class=observe-section><div class=observe-section-title><h3>MOCA 状态</h3><span>"+moca.length+" 个策略</span></div><div class=strat-grid>"+mocaCards+"</div></section>"+
+      "<section class=observe-section><div class=observe-section-title><h3>跨市场雷达</h3><span>只读观察</span></div><div class=strat-grid>"+radarCards+"</div></section>"+
+      "<section class=observe-section><div class=observe-section-title><h3>研究数据</h3><span>样本累计</span></div><div class=observe-table-wrap><table class=observe-table><thead><tr><th>数据源</th><th>状态</th><th>有效样本</th><th>累计记录</th><th>更新时间</th></tr></thead><tbody>"+rows+"</tbody></table></div></section>";
+  });
+}
+
+function loadAccount() {
+  api("/account").then(function(r){
+    if (!r || r.code!==0) return;
+    var data = r.data || r;
+    var b = data.balance || {};
+    var p = data.positions || [];
+    var sb = document.getElementById("statusBar");
+    if (!sb) return;
+    var posStr = p.map(function(x){return (x.side||x.posSide||"-")+Number(x.qty||x.sz||0).toFixed(0)}).join(" | ") || "\u65e0";
+    sb.innerHTML = "<span>\u6743\u76ca: $"+Number(b.eq||0).toFixed(2)+"</span><span>\u53ef\u7528: $"+Number(b.avail||0).toFixed(2)+"</span><span>\u4f4d\u7f6e: "+posStr+"</span>";
+  });
+}
+
+function loadOrders() {
+  api("/orders").then(function(r){
+    if(!r||r.code!==0) return;
+    var ords = r.orders||[];
+    var el = document.getElementById("orders-content");
+    if(!el) return;
+    if(ords.length===0) { el.innerHTML="<div class=stat-card><div class=lbl>Open Orders</div><div class=val>0</div></div>"; return; }
+    var tbl="<div class=card><h3 style=margin-bottom:8px>Open Orders ("+ords.length+")</h3><table style=width:100%;border-collapse:collapse;font-size:13px><tr style=color:var(--text2)><th align=left>Side</th><th align=right>Qty</th><th align=right>Price</th><th align=right>Type</th></tr>";
+    for(var i=0;i<ords.length;i++){
+      var o=ords[i];
+      tbl+="<tr><td>"+(o.side||o.posSide||"-")+"</td><td align=right>"+(o.sz||"0")+"</td><td align=right>$"+(o.px||"0")+"</td><td align=right>"+(o.ordType||"-")+"</td></tr>";
+    }
+    tbl+="</table></div>";
+    el.innerHTML=tbl;
+  });
+}
+
+function renderEngineRunCard(ru) {
+  ru = ru || {};
+  var status = ru.status || (ru.running ? "running" : (ru.halted ? "halted" : "stopped"));
+  var badgeClass = status === "running" ? "running" : (status === "halted" ? "warn" : "stopped");
+  var pnl = Number(ru.pnl || 0);
+  return "<div class=strat-card><div class=hdr><h3>"+(ru.symbol || ru.name || ru.runtime || "策略")+" <span class='badge "+badgeClass+"'>"+status+"</span></h3><span style='font-size:12px;color:var(--text2)'>"+(ru.runtime||"")+"</span></div><div class=body>"+
+    "<div class=row><span class=l>累计盈亏</span><span class='v' style='color:"+(pnl<0?"var(--red)":"var(--green)")+"'>$"+pnl.toFixed(2)+"</span></div>"+
+    "<div class=row><span class=l>日内盈亏</span><span class=v>$"+Number(ru.daily_pnl||0).toFixed(2)+"</span></div>"+
+    "<div class=row><span class=l>手续费</span><span class=v>$"+Number(ru.total_fees||0).toFixed(4)+"</span></div>"+
+    "<div class=row><span class=l>多 / 空数量</span><span class=v>"+Number(ru.long_qty||0)+" / "+Number(ru.short_qty||0)+"</span></div>"+
+    "<div class=row><span class=l>网格 / TP</span><span class=v>"+Number(ru.grid_long_count||0)+" / "+Number(ru.grid_short_count||0)+" / "+Number(ru.tp_order_count||0)+" / "+Number(ru.tp_max||0)+"</span></div>"+
+    (ru.halt_reason ? "<div class=row><span class=l>暂停原因</span><span class=v>"+ru.halt_reason+"</span></div>" : "")+
+    "</div></div>";
+}
+
+function loadDash() {
+  var el = document.getElementById("dash-content");
+  Promise.all([api("/strategies/engine-status"), api("/analytics/execution?limit=200"), api("/ops/health"), api("/config/history?limit=6")]).then(function(res){
+    var r = res[0];
+    var execResp = res[1];
+    var healthResp = res[2];
+    var historyResp = res[3];
+    if (!r) { el.innerHTML = "<div style='padding:20px;color:var(--red)'>加载失败</div>"; return; }
+    var pnl = r.pnl || {};
+    var monitor = r.monitor || {};
+    var risk = r.risk || {};
+    var execution = execResp && execResp.code === 0 ? (execResp.metrics || {}) : {};
+    var health = healthResp && healthResp.code === 0 ? (healthResp.health || {}) : null;
+    window.__fillSync = r.fill_sync || {};
+    var s = r.strategy ? (r.strategy.summary || {}) : {};
+    var topTrades = Number(s.total_trades || 0);
+    var topWinRate = topTrades > 0
+      ? ((Number(s.wins || 0) / topTrades) * 100)
+      : Number(execution.total_closed_trades || 0) > 0
+        ? Number(execution.win_rate || 0)
+        : null;
+    if (topTrades <= 0) topTrades = Number(execution.total_closed_trades || 0);
+    var eq = pnl.real_equity || pnl.initial_equity || 0;
+    var p = pnl.real_upnl || 0;
+    var html = "<div class=status-bar><span>引擎: <span class='"+(r.running?"dot g":"dot r")+"'></span><span>"+(r.running?"运行中":"已停止")+"</span></span><span>PID: "+(r.pid||"-")+"</span><span>权益: $"+(r.running?eq.toFixed(2):"-")+"</span><span>PnL: <span style='color:"+(p<0?"var(--red)":"var(--green)")+"'>$"+p.toFixed(2)+"</span></span><span style='color:var(--text2);font-size:12px'>进程控制由服务器部署流程执行</span></div>";
+    html += "<div class=stat-grid><div class=stat-card><div class=lbl>总交易</div><div class=val>"+topTrades+"</div></div><div class=stat-card><div class=lbl>胜率</div><div class=val>"+(topWinRate == null ? "-" : topWinRate.toFixed(1)+"%")+"</div></div><div class=stat-card><div class=lbl>总盈亏</div><div class='val "+(p<0?"red":"green")+"'>$"+p.toFixed(2)+"</div></div><div class=stat-card><div class=lbl>手续费</div><div class=val>$"+(pnl.total_fees_paid||0).toFixed(4)+"</div></div></div>";
+    html += buildOpsHealthPanel(health);
+    html += buildStrategyDataPanel(r.strategy);
+    html += buildExecutionPanel(execution);
+    html += buildLoopClosurePanel(r.loop_summary || [], r.portfolio_budget_audit || {}, historyResp && historyResp.code === 0 ? (historyResp.items || []) : []);
+    html += buildMonitorPanel(monitor, risk);
+    html += "<h3 style='margin-bottom:12px;font-size:16px'>&#128200; 运行策略</h3><div class=strat-grid>";
+    var runs = r.runs || [];
+    if (runs.length) html += runs.map(renderEngineRunCard).join("");
+    if (!runs.length && !r.running) html += "<div style='padding:40px;text-align:center;color:var(--text2)'>暂无运行策略</div>";
+    html += "</div>";
+    el.innerHTML = html;
+  });
+}
+
+function loadStrat() {
+  var el = document.getElementById("strat-content");
+  api("/strategies/engine-status").then(function(r){
+    if (!r) { el.innerHTML = "<div style='padding:20px;color:var(--red)'>加载失败</div>"; return; }
+    var pnl = r.pnl || {};
+    var p = pnl.real_upnl || 0;
+    var monitor = r.monitor || {};
+    var risk = r.risk || {};
+    window.__fillSync = r.fill_sync || {};
+    var runs = r.runs || [];
+    var html = buildMonitorPanel(monitor, risk);
+    html += "<div style='display:flex;gap:8px;margin-bottom:12px;align-items:center'><h3 style='font-size:16px'>运行实例</h3><span style='color:var(--text2);font-size:13px'>共 "+(runs.length||(r.running?1:0))+" 个</span><button class='btn-primary btn-sm' onclick='loadStrat()' style='margin-left:auto'>&#x21bb; 刷新</button></div><div class=strat-grid>";
+    if (runs.length) html += runs.map(renderEngineRunCard).join("");
+    if (!runs.length && !r.running) html = "<div style='padding:40px;text-align:center;color:var(--text2)'>暂无实例</div>";
+    el.innerHTML = html;
+  });
+}
+
+function loadCfg() {
+  var el = document.getElementById("cfg-content");
+  Promise.all([api("/config/full"), api("/config/history?limit=12")]).then(function(res){
+    var r = res[0];
+    var h = res[1];
+    if (!r || r.code !== 0) { el.innerHTML = "<div style='padding:20px;color:var(--red)'>加载失败</div>"; return; }
+    var c = r.config || {};
+    var f = c.futures || {};
+    var m = c.moca || {};
+    var d = m.adaptation_range || {};
+    el.innerHTML = "<div class=card><h3 style='margin-bottom:12px'>合约对冲参数</h3>" +
+      "<div class=form-row><div class=form-group><label>交易对</label><input id='cs' disabled value='"+(f.symbol||"")+"'></div>" +
+      "<div class=form-group><label>杠杆</label><input id='cl' disabled type=number value='"+(f.leverage||"")+"'></div></div>" +
+      "<div class=form-row><div class=form-group><label>基础仓位(USDT)</label><input id='cb' disabled type=number step=0.1 value='"+(f.base_position_usdt||"")+"'></div>" +
+      "<div class=form-group><label>最大加仓层</label><input id='cm' disabled type=number value='"+(f.max_add_layers||"")+"'></div></div>" +
+      "<div class=form-row><div class=form-group><label>加仓步长</label><input id='cs2' disabled type=number step=0.001 value='"+(f.add_step||"")+"'></div>" +
+      "<div class=form-group><label>保证金上限(60%=0.6)</label><input id='cm2' disabled type=number step=0.05 value='"+(f.max_margin_ratio||"")+"'></div></div>" +
+      "<div class=form-row><div class=form-group><label>首次止盈</label><input id='cft' disabled type=number step=0.001 value='"+(f.first_tp_ratio||"")+"'></div>" +
+      "<div class=form-group><label>最终止盈</label><input id='cft2' disabled type=number step=0.001 value='"+(f.final_tp_ratio||"")+"'></div></div>" +
+      "<div class=form-row><div class=form-group><label>Tick间隔(秒)</label><input id='ct' disabled type=number step=0.5 value='"+(c.global?c.global.tick_interval:"")+"'></div>" +
+      "<div class=form-group><label></label></div></div>" +
+      "<div style='color:var(--text2);font-size:12px'>策略配置由服务器部署流程维护，当前页面仅展示已生效参数。</div></div>" +
+      buildConfigHistoryPanel(h && h.code === 0 ? h.items : []);
+  });
+}
+
+function saveCfg() {
+  toast("配置由服务器部署流程维护，当前页面为只读", false);
+  return;
+  var data = {futures:{},global:{},moca:{adaptation_range:{}}};
+  data.futures.symbol = document.getElementById("cs").value;
+  data.futures.leverage = parseFloat(document.getElementById("cl").value);
+  data.futures.base_position_usdt = parseFloat(document.getElementById("cb").value);
+  data.futures.max_add_layers = parseInt(document.getElementById("cm").value);
+  data.futures.add_step = parseFloat(document.getElementById("cs2").value);
+  data.futures.max_margin_ratio = parseFloat(document.getElementById("cm2").value);
+  data.futures.first_tp_ratio = parseFloat(document.getElementById("cft").value);
+  data.futures.final_tp_ratio = parseFloat(document.getElementById("cft2").value);
+  data.global.tick_interval = parseFloat(document.getElementById("ct").value);
+  api("/engine/config", {method:"POST", body:JSON.stringify(data)}).then(function(r){
+    toast(r&&r.code===0?"配置已保存":"保存失败", r&&r.code===0);
+    if (r && r.code === 0) loadCfg();
+  });
+}
+
+function loadLogs() {
+  var el = document.getElementById("logs-content");
+  api("/logs?lines=100").then(function(r){
+    if (r && r.code === 0) {
+      el.innerHTML = "<div class=card><div style='display:flex;gap:8px;margin-bottom:8px;align-items:center'><button class='btn-primary btn-sm' onclick='loadLogs()'>&#x21bb; 刷新</button><span style='color:var(--text2);font-size:12px'>最近100行</span></div><div class=log-box>"+((r.lines||[]).join("\\n")||"(无日志)")+"</div></div>";
+    } else {
+      el.innerHTML = "<div style='padding:20px;color:var(--red)'>加载失败</div>";
+    }
+  });
+}
+
+function warnList(items) {
+  items = items || [];
+  if (!items.length) return "<div style='color:var(--green);font-size:12px;margin-top:8px'>暂无风险警告</div>";
+  return "<ul style='color:#fbbf24;font-size:12px;line-height:1.7;margin:8px 0 0 18px'>" + items.map(function(x){return "<li>" + String(x) + "</li>"}).join("") + "</ul>";
+}
+
+function renderKeyOptions(keys) {
+  keys = keys || [];
+  if (!keys.length) return "<option value=''>请先保存 API Key</option>";
+  return keys.map(function(k){return "<option value='"+k.id+"'>"+(k.alias || (k.exchange + " #" + k.id))+"</option>"}).join("");
+}
+
+
+function renderUserStrategyRow(s) {
+  var rt = s.runtime || {};
+  var running = !!rt.running;
+  var status = running ? "运行中" : (s.status || "stopped");
+  return "<div class=strat-card style='margin-bottom:10px'><div class=hdr><h3>"+(s.name||s.symbol)+" <span class='badge "+(running?"running":"stopped")+"'>"+status+"</span></h3><span style='font-size:12px;color:var(--text2)'>"+(s.paper_mode?"模拟盘":"实盘")+"</span></div>"+
+    "<div class=body><div class=row><span class=l>交易对</span><span class=v>"+s.symbol+"</span></div>"+
+    "<div class=row><span class=l>仓位/杠杆</span><span class=v>$"+fmtNum(s.base_position_usdt||0,2)+" · "+(s.leverage||"-")+"x</span></div>"+
+    "<div class=row><span class=l>PID</span><span class=v>"+(rt.pid||"-")+"</span></div>"+
+    "<div style='display:flex;gap:8px;margin-top:10px;flex-wrap:wrap'>"+
+    "<button class='btn-outline btn-sm' onclick='refreshUserStrategy("+s.id+")'>刷新状态</button>"+
+    (running ? "<button class='btn-danger btn-sm' onclick='stopUserStrategy("+s.id+")'>停止</button>" : "<button class='btn-primary btn-sm' onclick='startUserStrategy("+s.id+")'>启动实盘</button>")+
+    "</div></div></div>";
+}
+
+function loadKeys() {
+  var el = document.getElementById("keys-content");
+  if (!el) return;
+  Promise.all([api("/user/keys"), api("/user/strategies"), api("/user/strategy-recommendations")]).then(function(res){
+    var keys = res[0] && res[0].code === 0 ? (res[0].keys || []) : [];
+    var strategies = res[1] && res[1].code === 0 ? (res[1].strategies || []) : [];
+    var recommendations = res[2] && res[2].code === 0 ? (res[2].recommendations || []) : [];
+    var keyRows = keys.length ? keys.map(function(k){return "<div class=row><span class=l>"+(k.alias||"OKX API")+"</span><span class=v>#"+k.id+" · "+(k.exchange||"okx")+"</span></div>"}).join("") : "<p style='color:var(--text2);font-size:13px'>暂无 API Key，请先添加。</p>";
+    var stratRows = strategies.length ? strategies.map(renderUserStrategyRow).join("") : "<p style='color:var(--text2);font-size:13px'>暂无客户策略。</p>";
+    if (!SELECTED_STRATEGY_SYMBOL && recommendations.length) SELECTED_STRATEGY_SYMBOL = recommendations[0].symbol;
+    var recCards = recommendations.length ? recommendations.map(function(x){
+      var selected = x.symbol === SELECTED_STRATEGY_SYMBOL;
+      return "<div class='rec-card "+(selected?"selected":"")+"' data-symbol='"+x.symbol+"'><div style='display:flex;justify-content:space-between;gap:8px;align-items:center'><h4>"+x.name+"</h4><span class=risk-tag>"+(x.risk_tag||"推荐")+"</span></div><p>"+(x.description||"")+"</p><div style='font-size:12px;color:var(--text2)'>系统交易对："+x.symbol+"</div></div>";
+    }).join("") : "<p style='color:var(--text2);font-size:13px'>暂无推荐策略。</p>";
+    var customerBack = !isAdminUser() ? "<div style='margin-bottom:12px'><button class='ghost-btn btn-sm' onclick='returnToCustomer()'>返回我的</button></div>" : "";
+    el.innerHTML = customerBack+"<div class=card><h3 style='margin-bottom:12px'>API密钥管理</h3>"+
+      "<p style='color:var(--text2);font-size:13px;line-height:1.6;margin-bottom:12px'>保存前会检测读取余额权限；请在 OKX 关闭提币权限。客户策略将直接实盘运行，请确认 API 不开启提币权限并控制资金规模。</p>"+
+      "<div class=form-row><div class=form-group><label>别名</label><input id='uk_alias' placeholder='例如 main-okx'></div><div class=form-group><label>API Key</label><input id='uk_key' autocomplete='off'></div></div>"+
+      "<div class=form-row><div class=form-group><label>API Secret</label><input id='uk_secret' type='password' autocomplete='off'></div><div class=form-group><label>Passphrase</label><input id='uk_pass' type='password' autocomplete='off'></div></div>"+
+      "<button class='btn-outline btn-sm' onclick='precheckKey()'>权限检测</button> <button class='btn-primary btn-sm' onclick='saveUserKey()'>保存 API Key</button>"+
+      "<div id='key-precheck'></div><h4 style='margin:16px 0 8px'>已保存密钥</h4>"+keyRows+"</div>"+
+      "<div class=card><h3 style='margin-bottom:12px'>推荐策略</h3>"+
+      "<p style='color:var(--text2);font-size:13px;margin-bottom:12px'>请选择系统推荐策略。系统会自动匹配交易对和运行参数，客户侧不用也不能手动设置杠杆、加仓层数或止盈参数。</p>"+
+      "<div class=rec-grid>"+recCards+"</div>"+
+      "<div class=form-row><div class=form-group><label>API Key</label><select id='st_key'>"+renderKeyOptions(keys)+"</select></div><div class=form-group><label>当前选择</label><input id='st_symbol_view' value='"+(SELECTED_STRATEGY_SYMBOL||"请先选择推荐策略")+"' disabled></div></div>"+
+      "<button class='btn-outline btn-sm' onclick='precheckStrategy()'>策略预检</button> <button class='btn-primary btn-sm' onclick='createUserStrategy()'>创建并启动实盘策略</button>"+
+      "<div id='strategy-precheck'></div><h4 style='margin:16px 0 8px'>客户策略</h4>"+stratRows+"</div>";
+    bindRecommendationCards();
+  }).catch(function(err){
+    console.error("loadKeys failed", err);
+    el.innerHTML = "<div class=card><h3 style='margin-bottom:12px'>加载失败</h3><p style='color:var(--text2);font-size:13px'>客户控制台数据加载失败，请刷新页面或重新登录。</p></div>";
+  });
+}
+
+function keyPayload() {
+  return {
+    alias: document.getElementById("uk_alias").value.trim(),
+    api_key: document.getElementById("uk_key").value.trim(),
+    api_secret: document.getElementById("uk_secret").value.trim(),
+    passphrase: document.getElementById("uk_pass").value.trim()
+  };
+}
+
+function precheckKey() {
+  var data = keyPayload();
+  if (!data.api_key || !data.api_secret || !data.passphrase) { toast("请填写完整 API Key", false); return; }
+  api("/user/keys/precheck", {method:"POST", body:JSON.stringify(data)}).then(function(r){
+    var p = r && r.precheck || {};
+    var ok = !!p.can_read_balance;
+    document.getElementById("key-precheck").innerHTML = "<div class=auth-note>连接测试: "+(ok?"成功，可以保存 API Key":"失败，请检查 Key/Secret/Passphrase 和读取权限")+" · 风险: "+(p.risk_level||"unknown")+warnList(p.warnings)+"</div>";
+    toast(ok ? "API 连接测试成功，可以保存" : "API 连接测试失败", ok);
+  });
+}
+
+function saveUserKey() {
+  var data = keyPayload();
+  if (!data.api_key || !data.api_secret || !data.passphrase) { toast("请填写完整 API Key", false); return; }
+  api("/user/keys", {method:"POST", body:JSON.stringify(data)}).then(function(r){
+    toast(r&&r.code===0?"API Key 已保存":"保存失败: "+(r&&r.msg||"请求失败"), r&&r.code===0);
+    if (r && r.code === 0) loadKeys();
+  });
+}
+
+
+function bindRecommendationCards() {
+  document.querySelectorAll(".rec-card").forEach(function(card){
+    card.onclick = function(){ selectRecommendation(card.getAttribute("data-symbol")); };
+  });
+}
+
+function selectRecommendation(symbol) {
+  SELECTED_STRATEGY_SYMBOL = String(symbol || "").toUpperCase();
+  loadKeys();
+}
+
+function strategyPayload() {
+  return {
+    api_key_id: parseInt(document.getElementById("st_key").value || "0"),
+    symbol: SELECTED_STRATEGY_SYMBOL,
+    capital_budget_usdt: Number(document.getElementById("st_capital").value || 0),
+    paper_mode: false
+  };
+}
+
+function renderStrategyPrecheck(p) {
+  p = p || {};
+  var rec = p.recommended_params || {};
+  var adm = p.symbol_admission || {};
+  var ok = !!p.ok;
+  return "<div class=auth-note><b style='color:"+(ok?"var(--green)":"var(--red)")+"'>"+(ok?"预检通过，可以启动实盘策略":"预检未通过")+"</b>"+
+    "<div class=precheck-grid>"+
+    "<div class=precheck-item><div class=k>运行模式</div><div class=v>实盘</div></div>"+
+    "<div class=precheck-item><div class=k>系统交易对</div><div class=v>"+(adm.symbol||"-")+"</div></div>"+
+    "<div class=precheck-item><div class=k>最小保证金估算</div><div class=v>$"+fmtNum(adm.estimated_min_margin_usdt||0, 4)+"</div></div>"+
+    "<div class=precheck-item><div class=k>系统基础仓位</div><div class=v>$"+fmtNum(rec.base_position_usdt||0, 2)+"</div></div>"+
+    "</div>"+warnList(p.warnings)+"</div>";
+}
+
+function precheckStrategy() {
+  var data = strategyPayload();
+  if (!data.api_key_id) { toast("请先选择 API Key", false); return; }
+  if (!data.symbol) { toast("请输入交易对", false); return; }
+  api("/user/strategies/precheck", {method:"POST", body:JSON.stringify(data)}).then(function(r){
+    var ok = r && r.code === 0 && r.precheck && r.precheck.ok;
+    document.getElementById("strategy-precheck").innerHTML = renderStrategyPrecheck(r && r.precheck);
+    toast(ok ? "策略预检通过，可以创建实盘策略" : "策略预检失败: " + (r && r.msg || "请检查参数"), ok);
+  });
+}
+
+function showStartConfirm(data) {
+  PENDING_STRATEGY_PAYLOAD = data;
+  var box = document.getElementById("start-confirm-text");
+  if (box) box.innerHTML = "<b>确认启动实盘策略</b><br>当前为实盘模式，确认后会使用客户 OKX API 运行真实交易。系统将自动使用推荐参数，API Key 不需要也不应该开启提币权限。行情波动可能造成真实亏损，请确认资金规模和风险。<br><br>推荐策略：" + data.symbol;
+  document.getElementById("start-confirm").style.display = "flex";
+}
+function hideStartConfirm() { document.getElementById("start-confirm").style.display = "none"; PENDING_STRATEGY_PAYLOAD = null; }
+function confirmCreateUserStrategy() {
+  var data = PENDING_STRATEGY_PAYLOAD;
+  if (!data) return;
+  hideStartConfirm();
+  api("/user/strategies", {method:"POST", body:JSON.stringify(data)}).then(function(r){
+    var ok = r && r.code === 0;
+    if (r && r.precheck) document.getElementById("strategy-precheck").innerHTML = renderStrategyPrecheck(r.precheck);
+    if (!ok) { toast("创建失败: " + (r&&r.msg || "请求失败"), false); return; }
+    toast("实盘策略已创建，正在启动", true);
+    api("/user/strategies/" + r.strategy_id + "/start", {method:"POST"}).then(function(sr){
+      var started = sr && sr.code === 0;
+      toast(started ? "实盘策略已启动" : "创建成功但启动失败: " + (sr&&sr.msg || "请求失败"), started);
+      loadKeys();
+    });
+  });
+}
+function createUserStrategy() {
+  var data = strategyPayload();
+  if (!data.api_key_id) { toast("请先选择 API Key", false); return; }
+  if (!data.symbol) { toast("请先选择推荐策略", false); return; }
+  api("/user/strategies/precheck", {method:"POST", body:JSON.stringify(data)}).then(function(r){
+    var ok = r && r.code === 0 && r.precheck && r.precheck.ok;
+    document.getElementById("strategy-precheck").innerHTML = renderStrategyPrecheck(r && r.precheck);
+    if (!ok) { toast("策略预检失败: " + (r && r.msg || "请检查参数"), false); return; }
+    showStartConfirm(data);
+  });
+}
+
+
+function refreshUserStrategy(id) {
+  api("/user/strategies/" + id + "/status").then(function(r){
+    var ok = r && r.code === 0;
+    var st = ok ? (r.status || {}) : {};
+    toast(ok ? (st.running ? "策略运行中 PID " + st.pid : "策略未运行") : "状态查询失败", ok);
+    loadKeys();
+  });
+}
+
+function startUserStrategy(id) {
+  if (!confirm("将以实盘模式启动该客户策略，会真实交易。继续？")) return;
+  api("/user/strategies/" + id + "/start", {method:"POST"}).then(function(r){
+    var ok = r && r.code === 0;
+    toast(ok ? (r.msg || "策略已启动") : "启动失败: " + (r&&r.msg || "请求失败"), ok);
+    setTimeout(loadKeys, 1200);
+  });
+}
+
+function stopUserStrategy(id) {
+  if (!confirm("确认停止该客户策略进程？")) return;
+  api("/user/strategies/" + id + "/stop", {method:"POST"}).then(function(r){
+    var ok = r && r.code === 0;
+    toast(ok ? (r.msg || "策略已停止") : "停止失败: " + (r&&r.msg || "请求失败"), ok);
+    setTimeout(loadKeys, 1200);
+  });
+}
+
+
+function fmtAdminTs(ts) {
+  return ts ? new Date(Number(ts) * 1000).toLocaleString() : "-";
+}
+
+function loadAdmin() {
+  var el = document.getElementById("admin-content");
+  api("/admin/users").then(function(r){
+    if (!r) { el.innerHTML = "<div class=card style='color:var(--red)'>加载失败</div>"; return; }
+    if (r.code !== 0) { el.innerHTML = "<div class=card><h3>用户管理</h3><p style='color:var(--text2);margin-top:8px'>仅管理员 admin 可查看。</p></div>"; return; }
+    var users = r.users || [];
+    var rows = users.map(function(u){
+      var disabled = Number(u.is_disabled || 0) === 1;
+      return "<tr><td>#"+u.id+"</td><td>"+u.username+"</td><td>"+(u.email||"-")+"</td><td>"+u.api_key_count+"</td><td>"+u.strategy_count+"</td><td>"+(disabled?"禁用":"启用")+"</td><td>"+fmtAdminTs(u.created_ts)+"</td><td>"+fmtAdminTs(u.last_login_ts)+"</td><td>"+(u.username==="admin"?"-":"<button class='"+(disabled?"btn-primary":"btn-danger")+" btn-sm' onclick='setUserDisabled("+u.id+","+(!disabled)+")'>"+(disabled?"启用":"禁用")+"</button>")+"</td></tr>";
+    }).join("");
+    el.innerHTML = "<div class=card><h3 style='margin-bottom:12px'>用户管理</h3><p style='color:var(--text2);font-size:13px;margin-bottom:12px'>可查看注册用户、API Key 数、策略数，并禁用异常用户登录。</p>"+
+      "<table style='width:100%;border-collapse:collapse;font-size:13px'><tr style='color:var(--text2)'><th align=left>ID</th><th align=left>邮箱/账号</th><th align=left>通知邮箱</th><th>Key</th><th>策略</th><th>状态</th><th align=left>注册</th><th align=left>最近登录</th><th>操作</th></tr>"+rows+"</table></div>";
+  });
+}
+
+function setUserDisabled(id, disabled) {
+  if (!confirm((disabled ? "禁用" : "启用") + "该用户？")) return;
+  api("/admin/users/" + id + "/disabled", {method:"POST", body:JSON.stringify({disabled: disabled})}).then(function(r){
+    var ok = r && r.code === 0;
+    toast(ok ? "已更新用户状态" : "更新失败: " + (r&&r.msg || "请求失败"), ok);
+    if (ok) loadAdmin();
+  });
+}
+
+function restartEng() { api("/process/restart",{method:"POST"}).then(function(r){toast(r&&r.code===0?"重启命令已发送":"失败",r&&r.code===0);setTimeout(loadAll,3000)}); }
+function stopEng() { api("/process/stop",{method:"POST"}).then(function(r){toast(r&&r.code===0?"停止命令已发送":"失败",r&&r.code===0);setTimeout(loadAll,3000)}); }
+function resetAccounting() {
+  if (!confirm("这会备份当前记账文件，清空成交统计与盈亏基线，并按原状态重启引擎。是否继续？")) return;
+  api("/process/reset-accounting",{method:"POST"}).then(function(r){
+    var ok = r && r.code === 0;
+    var msg = ok ? ("记账已重置，备份: " + (r.backup_dir || "-")) : ("重置失败: " + ((r&&r.msg) || "请求失败"));
+    toast(msg, ok);
+    setTimeout(loadAll, 5000);
+  });
+}
+
+if (TOKEN) { afterLogin(); }
+</script>
+</body>
+</html>

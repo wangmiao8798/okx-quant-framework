@@ -1,0 +1,12 @@
+[Unit]
+Description=Sample read-only DRAM inventory shadow every minute
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=1min
+AccuracySec=5sec
+Persistent=true
+Unit=okx-dram-inventory-shadow.service
+
+[Install]
+WantedBy=timers.target

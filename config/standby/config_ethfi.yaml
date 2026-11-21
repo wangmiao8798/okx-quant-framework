@@ -1,0 +1,156 @@
+ai_trader:
+  config_file: config/ai_trader.json
+  enabled: true
+  sync_to_okx: true
+exchange:
+  okx:
+    flag: '0'
+    key_file: data/keys.enc
+    proxy: ''
+futures:
+  add_cooldown: 120
+  add_multiplier: 1.18
+  add_step: 0.01
+  auto_compound_ratio: 0
+  base_position_usdt: 2.5
+  final_tp_ratio: 0.02
+  first_tp_ratio: 0.012
+  leverage: 3
+  margin_mode: cross
+  max_add_layers: 3
+  max_long_pos: 10
+  max_side_notional_usdt: 60
+  max_net_notional_usdt: 25
+  weak_side_margin_ratio: 1.05
+  weak_side_margin_imbalance_threshold: 0.25
+  max_margin_ratio: 0.25
+  max_short_pos: 10
+  max_tp_orders: 12
+  symbol: ETHFI-USDT-SWAP
+  trailing_tp_retreat: 1.015
+  grid_bias_ratio: 0.35
+  grid_expand_margin_ratio: 0.35
+  min_edge_ratio: 0.007
+  min_expected_net_usdt: 0.02
+  min_open_equity_usdt: 40
+  position_pct: 0.01
+  reserved_usdt: 20
+  trend_bias_strength: 1.05
+  hard_stop_enabled: false
+  startup_auto_hedge_missing_side: true
+  startup_rebuild_grids: true
+global:
+  demo: false
+  enable_futures: true
+  enable_spot: false
+  kline_interval: 5m
+  kline_limit: 210
+  tick_interval: 3
+kelly:
+  default_kelly: 1.1
+  enabled: true
+  max_kelly: 1.35
+  min_kelly: 1.0
+logging:
+  backup_count: 7
+  console: false
+  file: logs/trading.log
+  level: INFO
+  max_size_mb: 20
+moca:
+  adaptation_range:
+    add_layers:
+    - 1.0
+    - 1.3
+    grid_density:
+    - 1.3
+    - 1.7
+    leverage:
+    - 1.0
+    - 1.2
+    tp_ratio:
+    - 1.0
+    - 1.3
+  atr_period: 14
+  bb_period: 21
+  bb_std: 2.1
+  enabled: true
+  thresholds:
+    extreme_volatility: 1.09
+    high_volatility: 1.04
+    trend_strength: 25
+    volume_spike: 3.0
+    wick_ratio: 2.5
+  timeframes:
+  - 5m
+  - 15m
+  - 1H
+network:
+  order_retry:
+    max_retries: 3
+    retry_delay: 1
+  reconnect:
+    exponential_backoff: true
+    max_retries: 11
+    retry_interval: 5
+  websocket:
+    enabled: true
+    ping_interval: 21
+notify:
+  email:
+    email_env: OKX_NOTIFY_SMTP_EMAIL
+    enabled: true
+    min_interval: 61
+    password_env: OKX_NOTIFY_SMTP_PASSWORD
+    smtp_port: 465
+    smtp_server: smtp.qq.com
+    to_env: OKX_NOTIFY_SMTP_TO
+recorder:
+  auto_export_days: 7
+  export_dir: data/exports
+  pnl_file: data/pnl_records_ethfi.csv
+risk:
+  black_swan:
+    auto_restart: false
+    consecutive_drop: 3
+    cooldown_seconds: 610
+    enabled: true
+    price_jump_threshold: 1.05
+  liquidation:
+    emergency_margin_rate: 1.2
+    enabled: true
+    leverage_step: 1
+    reduce_position_ratio: 1.25
+    safety_margin_rate: 1.5
+  stop_loss:
+    cooldown_seconds: 610
+    enabled: true
+    total_loss_pct: 12
+segment_close:
+  close_offset: 0.01
+  enable: false
+  order_refresh_ms: 2000
+  price_buffer: 0.003
+  segment_layer_limit: 3
+spot:
+  first_layer_ratio: 0.15
+  grid_step: 0.003
+  invest_usdt: 110
+  layer_multiplier: 1.2
+  max_layers: 11
+  min_order_interval: 61
+  symbol: ETHFI-USDT-SWAP
+  take_profit_ratio: 0.6
+  tp_sell_ratios:
+  - 1.3
+  - 1.3
+  - 1.2
+  - 1.1
+  - 1.1
+stop_loss:
+  enabled: true
+  total_loss_pct: 20
+profile:
+  name: ETHFI 高波动观察档
+  note: standby only; high-volatility ETHFI swap, do not start live without fresh
+    audit

@@ -1,0 +1,36 @@
+[Unit]
+Description=OKX 量化交易系统 - MOCA 自适应引擎
+Documentation=https://github.com/your-org/okx_quant
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+
+WorkingDirectory=/opt/okx_quant
+
+Environment=PATH=/opt/okx_quant/venv/bin:/usr/bin:/bin
+EnvironmentFile=-/etc/okx-quant/notifications.env
+ExecStart=/opt/okx_quant/venv/bin/python main.py --config /opt/okx_quant/config/config.yaml 
+
+KillSignal=SIGTERM
+TimeoutStopSec=30
+SendSIGKILL=yes
+
+StandardOutput=append:/opt/okx_quant/logs/trading.log
+StandardError=append:/opt/okx_quant/logs/error.log
+
+Restart=on-failure
+RestartSec=10
+StartLimitBurst=5
+
+NoNewPrivileges=true
+PrivateTmp=true
+
+LimitNOFILE=65536
+LimitNPROC=1024
+
+[Install]
+WantedBy=multi-user.target

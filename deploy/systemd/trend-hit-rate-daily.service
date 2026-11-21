@@ -1,0 +1,10 @@
+[Unit]
+Description=OKX ADX 趋势命中率每日报表
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ubuntu
+WorkingDirectory=/opt/okx_quant
+ExecStart=/usr/bin/python3 /opt/okx_quant/scripts/trend_hit_rate_report.py --mode daily
