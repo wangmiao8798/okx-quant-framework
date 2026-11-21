@@ -1,6 +1,8 @@
 # OKX 合约对冲网格交易框架
 
-> **A production-grade engineering framework for delta-neutral grid trading on OKX perpetual swaps.**
+[简体中文](README.md) | **English** → [README.en.md](README.en.md)
+
+> **A production-grade engineering framework for hedged grid trading on OKX perpetual swaps.**
 > Focus: order-state correctness, risk gating, and self-healing under real exchange conditions — not on promising returns.
 
 一套面向 OKX 永续合约的**双边对冲网格**交易系统。它不是一个"稳赚策略"，而是一个**把实盘工程问题真正解决过的交易框架**：止盈覆盖丢失后能自愈、账户贴线时知道该放哪个方向、单边趋势里能拦住自我拆解。
