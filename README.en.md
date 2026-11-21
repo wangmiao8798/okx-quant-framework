@@ -155,7 +155,7 @@ main.py                      # multi-profile entry (glob config/config_*.yaml)
     └── web/                     # FastAPI panel (optional)
 ```
 
-Scale: **~34,000 lines of Python** (excluding 50 test files / 329 test cases).
+Scale: **~34,000 lines of Python**.
 
 ---
 
@@ -251,10 +251,10 @@ Note that `ctVal` (contract value) differs per symbol. **Always take notional va
 ## Tests
 
 ```bash
-pytest -q          # 50 test files / 329 cases: TP coverage, one-sidedness exemption, command bus, risk allow-paths
+pytest -q          # covers TP coverage, one-sidedness exemption, command bus, risk allow-paths
 ```
 
-> Measured: `325 passed, 4 skipped` (the 4 skips are config-validation tests for retired symbols).
+> Run it yourself for the current result. Config-validation tests for retired symbols will skip — that's expected.
 
 ---
 

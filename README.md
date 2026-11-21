@@ -155,7 +155,7 @@ main.py                      # 多 profile 入口（glob config/config_*.yaml）
     └── web/                     # FastAPI 面板（可选）
 ```
 
-代码规模：**约 34,000 行 Python**（不含 50 个测试文件 / 329 个用例）。
+代码规模：**约 34,000 行 Python**。
 
 ---
 
@@ -251,10 +251,10 @@ cp config/config_fartcoin.yaml config/config_sol.yaml
 ## 测试
 
 ```bash
-pytest -q          # 50 个测试文件 / 329 个用例，覆盖止盈覆盖、单边化豁免、命令总线、风控放行路径
+pytest -q          # 覆盖止盈覆盖、单边化豁免、命令总线、风控放行路径
 ```
 
-> 实测：`325 passed, 4 skipped`（4 个 skip 为已退役品种配置的校验，可安全忽略）。
+> 具体结果以你本地运行为准。已退役品种的配置校验会被 skip，属正常现象。
 
 ---
 
